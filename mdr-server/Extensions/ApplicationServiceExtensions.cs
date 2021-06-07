@@ -13,10 +13,10 @@ namespace mdr_server.Extensions
         {
             services.AddScoped<IElasticSearchService, ElasticSearchService>();
 
-            services.AddScoped<IStudyMapper, StudyMapper>();
-            services.AddScoped<IObjectMapper, ObjectMapper>();
+            services.AddScoped<IDataMapper, DataMapper>();
             
             services.AddScoped<ISearchRepository, SearchRepository>();
+            services.AddScoped<IApiRepository, ApiRepository>();
             services.AddScoped<IStudyRepository, StudyRepository>();
             services.AddScoped<IObjectRepository, ObjectRepository>();
             

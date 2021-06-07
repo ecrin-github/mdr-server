@@ -14,24 +14,22 @@ namespace mdr_server.Data
     public class SearchRepository : ISearchRepository
     {
         private readonly IElasticSearchService _elasticSearchService;
-        private readonly IStudyMapper _studyMapper;
-        private readonly IObjectMapper _objectMapper;
+        private readonly IDataMapper _dataMapper;
 
         public SearchRepository(IElasticSearchService elasticSearchService, 
-            IStudyMapper studyMapper, IObjectMapper objectMapper)
+            IDataMapper dataMapper)
         {
             _elasticSearchService = elasticSearchService;
-            _studyMapper = studyMapper;
-            _objectMapper = objectMapper;
+            _dataMapper = dataMapper;
         }
         
-        public async Task<List<StudyDto>> GetStudySearchResults(ElasticQueryDto elasticQueryDto)
+        public async Task<List<StudyDto>> GetStudySearchResults(SearchQueryDto searchQueryDto)
         {
             int? startFrom = null;
-            if (elasticQueryDto.Page != null && elasticQueryDto.PageSize != null)
+            if (searchQueryDto.Page != null && searchQueryDto.PageSize != null)
             {
-                startFrom = ((elasticQueryDto.Page + 1) * elasticQueryDto.PageSize) - elasticQueryDto.PageSize;
-                if (startFrom == 1 && elasticQueryDto.PageSize == 1)
+                startFrom = ((searchQueryDto.Page + 1) * searchQueryDto.PageSize) - searchQueryDto.PageSize;
+                if (startFrom == 1 && searchQueryDto.PageSize == 1)
                 {
                     startFrom = 0;
                 }
@@ -40,18 +38,18 @@ namespace mdr_server.Data
             SearchRequest<Study> searchRequest = null;
             if (startFrom != null)
             {
-                searchRequest = new SearchRequest<Study>(Indices.Index(elasticQueryDto.Index))
+                searchRequest = new SearchRequest<Study>(Indices.Index(searchQueryDto.Index))
                 {
                     From = startFrom,
-                    Size = elasticQueryDto.PageSize,
-                    Query = new RawQuery(JsonSerializer.Serialize(elasticQueryDto.ElasticQuery))
+                    Size = searchQueryDto.PageSize,
+                    Query = new RawQuery(JsonSerializer.Serialize(searchQueryDto.ElasticQuery))
                 };
             }
             else
             {
-                searchRequest = new SearchRequest<Study>(Indices.Index(elasticQueryDto.Index))
+                searchRequest = new SearchRequest<Study>(Indices.Index(searchQueryDto.Index))
                 {
-                    Query = new RawQuery(JsonSerializer.Serialize(elasticQueryDto.ElasticQuery))
+                    Query = new RawQuery(JsonSerializer.Serialize(searchQueryDto.ElasticQuery))
                 };
             }
 
@@ -59,17 +57,17 @@ namespace mdr_server.Data
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);
                 var studies = results.Documents.ToList();
 
-                return await _studyMapper.MapStudies(studies);
+                return await _dataMapper.MapStudies(studies);
             }
         }
         
-        public async Task<List<StudyDto>> GetObjectSearchResults(ElasticQueryDto elasticQueryDto)
+        public async Task<List<StudyDto>> GetObjectSearchResults(SearchQueryDto searchQueryDto)
         {
             int? startFrom = null;
-            if (elasticQueryDto.Page != null && elasticQueryDto.PageSize != null)
+            if (searchQueryDto.Page != null && searchQueryDto.PageSize != null)
             {
-                startFrom = ((elasticQueryDto.Page + 1) * elasticQueryDto.PageSize) - elasticQueryDto.PageSize;
-                if (startFrom == 1 && elasticQueryDto.PageSize == 1)
+                startFrom = ((searchQueryDto.Page + 1) * searchQueryDto.PageSize) - searchQueryDto.PageSize;
+                if (startFrom == 1 && searchQueryDto.PageSize == 1)
                 {
                     startFrom = 0;
                 }
@@ -78,18 +76,18 @@ namespace mdr_server.Data
             SearchRequest<Object> searchRequest = null;
             if (startFrom != null)
             {
-                searchRequest = new SearchRequest<Object>(Indices.Index(elasticQueryDto.Index))
+                searchRequest = new SearchRequest<Object>(Indices.Index(searchQueryDto.Index))
                 {
                     From = startFrom,
-                    Size = elasticQueryDto.PageSize,
-                    Query = new RawQuery(JsonSerializer.Serialize(elasticQueryDto.ElasticQuery))
+                    Size = searchQueryDto.PageSize,
+                    Query = new RawQuery(JsonSerializer.Serialize(searchQueryDto.ElasticQuery))
                 };
             }
             else
             {
-                searchRequest = new SearchRequest<Object>(Indices.Index(elasticQueryDto.Index))
+                searchRequest = new SearchRequest<Object>(Indices.Index(searchQueryDto.Index))
                 {
-                    Query = new RawQuery(JsonSerializer.Serialize(elasticQueryDto.ElasticQuery))
+                    Query = new RawQuery(JsonSerializer.Serialize(searchQueryDto.ElasticQuery))
                 };
             }
 
@@ -97,7 +95,7 @@ namespace mdr_server.Data
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Object>(searchRequest);
                 var objects = results.Documents.ToList();
 
-                return await _objectMapper.MapObjects(objects);
+                return await _dataMapper.MapObjects(objects);
             }
         }
     }

@@ -5,7 +5,7 @@ namespace mdr_server.Entities.Object
     public class ObjectInstance
     {
         [Number(Name = "id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         
         [Text(Name = "repository_org")]
         public string RepositoryOrg { get; set; }

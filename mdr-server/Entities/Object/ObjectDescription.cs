@@ -5,7 +5,7 @@ namespace mdr_server.Entities.Object
     public class ObjectDescription
     {
         [Number(Name = "id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         
         [Text(Name = "description_type")]
         public string DescriptionType { get; set; }

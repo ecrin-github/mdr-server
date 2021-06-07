@@ -24,7 +24,7 @@ namespace mdr_server.Entities.Object
         public string ObjectType { get; set; }
         
         [Date(Name = "publication_year", Format = "YYYY")]
-        public int PublicationYear { get; set; }
+        public int? PublicationYear { get; set; }
         
         [Text(Name = "lang_code")]
         public string LangCode { get; set; }

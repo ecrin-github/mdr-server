@@ -1,18 +1,20 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using mdr_server.DTOs.Study;
+using mdr_server.Entities.Object;
 using mdr_server.Entities.Study;
 using mdr_server.Interfaces;
 
 namespace mdr_server.Helpers
 {
-    public class StudyMapper : IStudyMapper
+    public class DataMapper : IDataMapper
     {
-
+        private readonly IStudyRepository _studyRepository;
         private readonly IObjectRepository _objectRepository;
-        
-        public StudyMapper(IObjectRepository objectRepository)
+
+        public DataMapper(IStudyRepository studyRepository, IObjectRepository objectRepository)
         {
+            _studyRepository = studyRepository;
             _objectRepository = objectRepository;
         }
         
@@ -45,6 +47,23 @@ namespace mdr_server.Helpers
             }
 
             return studiesDto;
+        }
+
+        public async Task<List<StudyDto>> MapObjects(List<Object> objects)
+        {
+            List<StudyDto> studies = new List<StudyDto>();
+
+            foreach (var obj in objects)
+            {
+                List<Study> fetchedStudies = await _studyRepository.GetFetchedStudies(obj.LinkedStudies);
+                List<StudyDto> mappedStudies = await MapStudies(fetchedStudies);
+                foreach (var study in mappedStudies)
+                {
+                    studies.Add(study);
+                }
+            }
+
+            return studies;
         }
     }
 }

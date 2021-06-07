@@ -5,7 +5,7 @@ namespace mdr_server.Entities.Study
     public class StudyIdentifier
     {
         [Number(Name = "id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         
         [Text(Name = "identifier_value")]
         public string IdentifierValue { get; set; }

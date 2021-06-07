@@ -5,7 +5,7 @@ namespace mdr_server.Entities.Study
     public class StudyTopic
     {
         [Number(Name = "id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         
         [Text(Name = "topic_type")]
         public string TopicType { get; set; }

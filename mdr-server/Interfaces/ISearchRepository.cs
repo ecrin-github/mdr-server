@@ -7,7 +7,7 @@ namespace mdr_server.Interfaces
 {
     public interface ISearchRepository
     {
-        Task<List<StudyDto>> GetStudySearchResults(ElasticQueryDto elasticQueryDto);
-        Task<List<StudyDto>> GetObjectSearchResults(ElasticQueryDto elasticQueryDto);
+        Task<List<StudyDto>> GetStudySearchResults(SearchQueryDto searchQueryDto);
+        Task<List<StudyDto>> GetObjectSearchResults(SearchQueryDto searchQueryDto);
     }
 }
