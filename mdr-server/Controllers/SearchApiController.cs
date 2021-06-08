@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace mdr_server.Controllers
 {
     [ApiController]
-    [Route("search-api")]
+    [Route("elasticsearch-api/v1")]
     public class SearchApiController : ControllerBase
     {
 

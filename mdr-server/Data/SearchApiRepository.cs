@@ -22,20 +22,24 @@ namespace mdr_server.Data
             _elasticSearchService = elasticSearchService;
             _dataMapper = dataMapper;
         }
+
+        private static int? CalculateStartFrom(int? page, int? pageSize)
+        {
+            if (page == null || pageSize == null) return null;
+            var startFrom = ((page + 1) * pageSize) - pageSize;
+            if (startFrom == 1 && pageSize == 1)
+            {
+                startFrom = 0;
+            }
+            return startFrom;
+        }
         
         public async Task<List<StudyDto>> GetStudySearchResults(SearchApiQueryDto searchApiQueryDto)
         {
-            int? startFrom = null;
-            if (searchApiQueryDto.Page != null && searchApiQueryDto.PageSize != null)
-            {
-                startFrom = ((searchApiQueryDto.Page + 1) * searchApiQueryDto.PageSize) - searchApiQueryDto.PageSize;
-                if (startFrom == 1 && searchApiQueryDto.PageSize == 1)
-                {
-                    startFrom = 0;
-                }
-            }
+            
+            var startFrom = CalculateStartFrom(page: searchApiQueryDto.Page, pageSize: searchApiQueryDto.PageSize);
 
-            SearchRequest<Study> searchRequest = null;
+            SearchRequest<Study> searchRequest;
             if (startFrom != null)
             {
                 searchRequest = new SearchRequest<Study>(Indices.Index("study"))
@@ -63,17 +67,10 @@ namespace mdr_server.Data
         
         public async Task<List<StudyDto>> GetObjectSearchResults(SearchApiQueryDto searchApiQueryDto)
         {
-            int? startFrom = null;
-            if (searchApiQueryDto.Page != null && searchApiQueryDto.PageSize != null)
-            {
-                startFrom = ((searchApiQueryDto.Page + 1) * searchApiQueryDto.PageSize) - searchApiQueryDto.PageSize;
-                if (startFrom == 1 && searchApiQueryDto.PageSize == 1)
-                {
-                    startFrom = 0;
-                }
-            }
-
-            SearchRequest<Object> searchRequest = null;
+            
+            var startFrom = CalculateStartFrom(page: searchApiQueryDto.Page, pageSize: searchApiQueryDto.PageSize);
+            
+            SearchRequest<Object> searchRequest;
             if (startFrom != null)
             {
                 searchRequest = new SearchRequest<Object>(Indices.Index("data-object"))
