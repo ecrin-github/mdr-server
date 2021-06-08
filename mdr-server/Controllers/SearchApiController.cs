@@ -9,13 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace mdr_server.Controllers
 {
     [ApiController]
-    [Route("search")]
-    public class SearchController : ControllerBase
+    [Route("search-api")]
+    public class SearchApiController : ControllerBase
     {
 
         private readonly ISearchApiRepository _searchApiRepository;
 
-        public SearchController(ISearchApiRepository searchApiRepository)
+        public SearchApiController(ISearchApiRepository searchApiRepository)
         {
             _searchApiRepository = searchApiRepository;
         }
