@@ -32,10 +32,11 @@ namespace mdr_server.Data
             }
             return startFrom;
         }
-        
-        public List<IdentifierType> GetIdentifierTypes()
+
+        private string GetIdentifierType(int id)
         {
             var identifierTypes = new List<IdentifierType>();
+            
             identifierTypes.Add(new IdentifierType(){Id = 11, Name = "Trial registry ID"});
             identifierTypes.Add(new IdentifierType(){Id = 41, Name = "Regulatory body ID"});
             identifierTypes.Add(new IdentifierType(){Id = 12, Name = "Ethics review ID"});
@@ -44,15 +45,15 @@ namespace mdr_server.Data
             identifierTypes.Add(new IdentifierType(){Id = 39, Name = "NIH CTRP ID"});
             identifierTypes.Add(new IdentifierType(){Id = 40, Name = "DAIDS ID"});
             identifierTypes.Add(new IdentifierType(){Id = 42, Name = "NHLBI ID"});
-            return identifierTypes;
+            
+            return identifierTypes.Find(x => x.Id == id)?.Name;
         }
         
         public async Task<List<StudyDto>> SpecificStudyApi(ApiSpecificStudyDto apiSpecificStudyDto)
         {
             var startFrom = CalculateStartFrom(apiSpecificStudyDto.Page, apiSpecificStudyDto.PageSize);
 
-            var identifierTypes = GetIdentifierTypes();
-            var identifierType = identifierTypes.Find(x => x.Id == apiSpecificStudyDto.SearchType);
+            var identifierType = GetIdentifierType(apiSpecificStudyDto.SearchType);
             
             SearchRequest<Study> searchRequest;
             if (startFrom != null)
@@ -65,8 +66,8 @@ namespace mdr_server.Data
                     {
                         Name = "",
                         Path = new Field("study_identifiers"),
-                        Query = new TermQuery() {Field = new Field("study_identifiers.identifier_type"), Value = identifierType.Name} &&
-                                new TermQuery() {Field = new Field("study_identifiers.identifier_value"), Value = apiSpecificStudyDto.SearchValue}
+                        Query = new TermQuery() {Field = Infer.Field<Study>(p => p.StudyIdentifiers.First().IdentifierType), Value = identifierType} &&
+                                new TermQuery() {Field = Infer.Field<Study>(p => p.StudyIdentifiers.First().IdentifierValue), Value = apiSpecificStudyDto.SearchValue}
                     }
                 };
             }
@@ -78,7 +79,7 @@ namespace mdr_server.Data
                     {
                         Name = "",
                         Path = new Field("study_identifiers"),
-                        Query = new TermQuery() {Field = new Field("study_identifiers.identifier_type"), Value = identifierType.Name} &&
+                        Query = new TermQuery() {Field = new Field("study_identifiers.identifier_type"), Value = identifierType} &&
                                 new TermQuery() {Field = new Field("study_identifiers.identifier_value"), Value = apiSpecificStudyDto.SearchValue}
                     }
                 };
