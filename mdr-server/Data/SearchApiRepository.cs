@@ -11,25 +11,25 @@ using Object = mdr_server.Entities.Object.Object;
 
 namespace mdr_server.Data
 {
-    public class SearchRepository : ISearchRepository
+    public class SearchApiRepository : ISearchApiRepository
     {
         private readonly IElasticSearchService _elasticSearchService;
         private readonly IDataMapper _dataMapper;
 
-        public SearchRepository(IElasticSearchService elasticSearchService, 
+        public SearchApiRepository(IElasticSearchService elasticSearchService, 
             IDataMapper dataMapper)
         {
             _elasticSearchService = elasticSearchService;
             _dataMapper = dataMapper;
         }
         
-        public async Task<List<StudyDto>> GetStudySearchResults(SearchQueryDto searchQueryDto)
+        public async Task<List<StudyDto>> GetStudySearchResults(SearchApiQueryDto searchApiQueryDto)
         {
             int? startFrom = null;
-            if (searchQueryDto.Page != null && searchQueryDto.PageSize != null)
+            if (searchApiQueryDto.Page != null && searchApiQueryDto.PageSize != null)
             {
-                startFrom = ((searchQueryDto.Page + 1) * searchQueryDto.PageSize) - searchQueryDto.PageSize;
-                if (startFrom == 1 && searchQueryDto.PageSize == 1)
+                startFrom = ((searchApiQueryDto.Page + 1) * searchApiQueryDto.PageSize) - searchApiQueryDto.PageSize;
+                if (startFrom == 1 && searchApiQueryDto.PageSize == 1)
                 {
                     startFrom = 0;
                 }
@@ -38,18 +38,18 @@ namespace mdr_server.Data
             SearchRequest<Study> searchRequest = null;
             if (startFrom != null)
             {
-                searchRequest = new SearchRequest<Study>(Indices.Index(searchQueryDto.Index))
+                searchRequest = new SearchRequest<Study>(Indices.Index("study"))
                 {
                     From = startFrom,
-                    Size = searchQueryDto.PageSize,
-                    Query = new RawQuery(JsonSerializer.Serialize(searchQueryDto.ElasticQuery))
+                    Size = searchApiQueryDto.PageSize,
+                    Query = new RawQuery(JsonSerializer.Serialize(searchApiQueryDto.ElasticQuery))
                 };
             }
             else
             {
-                searchRequest = new SearchRequest<Study>(Indices.Index(searchQueryDto.Index))
+                searchRequest = new SearchRequest<Study>(Indices.Index("study"))
                 {
-                    Query = new RawQuery(JsonSerializer.Serialize(searchQueryDto.ElasticQuery))
+                    Query = new RawQuery(JsonSerializer.Serialize(searchApiQueryDto.ElasticQuery))
                 };
             }
 
@@ -61,13 +61,13 @@ namespace mdr_server.Data
             }
         }
         
-        public async Task<List<StudyDto>> GetObjectSearchResults(SearchQueryDto searchQueryDto)
+        public async Task<List<StudyDto>> GetObjectSearchResults(SearchApiQueryDto searchApiQueryDto)
         {
             int? startFrom = null;
-            if (searchQueryDto.Page != null && searchQueryDto.PageSize != null)
+            if (searchApiQueryDto.Page != null && searchApiQueryDto.PageSize != null)
             {
-                startFrom = ((searchQueryDto.Page + 1) * searchQueryDto.PageSize) - searchQueryDto.PageSize;
-                if (startFrom == 1 && searchQueryDto.PageSize == 1)
+                startFrom = ((searchApiQueryDto.Page + 1) * searchApiQueryDto.PageSize) - searchApiQueryDto.PageSize;
+                if (startFrom == 1 && searchApiQueryDto.PageSize == 1)
                 {
                     startFrom = 0;
                 }
@@ -76,18 +76,18 @@ namespace mdr_server.Data
             SearchRequest<Object> searchRequest = null;
             if (startFrom != null)
             {
-                searchRequest = new SearchRequest<Object>(Indices.Index(searchQueryDto.Index))
+                searchRequest = new SearchRequest<Object>(Indices.Index("data-object"))
                 {
                     From = startFrom,
-                    Size = searchQueryDto.PageSize,
-                    Query = new RawQuery(JsonSerializer.Serialize(searchQueryDto.ElasticQuery))
+                    Size = searchApiQueryDto.PageSize,
+                    Query = new RawQuery(JsonSerializer.Serialize(searchApiQueryDto.ElasticQuery))
                 };
             }
             else
             {
-                searchRequest = new SearchRequest<Object>(Indices.Index(searchQueryDto.Index))
+                searchRequest = new SearchRequest<Object>(Indices.Index("data-object"))
                 {
-                    Query = new RawQuery(JsonSerializer.Serialize(searchQueryDto.ElasticQuery))
+                    Query = new RawQuery(JsonSerializer.Serialize(searchApiQueryDto.ElasticQuery))
                 };
             }
 

@@ -13,23 +13,23 @@ namespace mdr_server.Controllers
     public class SearchController : ControllerBase
     {
 
-        private readonly ISearchRepository _searchRepository;
+        private readonly ISearchApiRepository _searchApiRepository;
 
-        public SearchController(ISearchRepository searchRepository)
+        public SearchController(ISearchApiRepository searchApiRepository)
         {
-            _searchRepository = searchRepository;
+            _searchApiRepository = searchApiRepository;
         }
 
         [HttpPost("study")]
-        public async Task<List<StudyDto>> GetStudySearchResults(SearchQueryDto searchQueryDto)
+        public async Task<List<StudyDto>> GetStudySearchResults(SearchApiQueryDto searchApiQueryDto)
         {
-            return await _searchRepository.GetStudySearchResults(searchQueryDto);
+            return await _searchApiRepository.GetStudySearchResults(searchApiQueryDto);
         }
         
         [HttpPost("object")]
-        public async Task<List<StudyDto>> GetObjectSearchResults(SearchQueryDto searchQueryDto)
+        public async Task<List<StudyDto>> GetObjectSearchResults(SearchApiQueryDto searchApiQueryDto)
         {
-            return await _searchRepository.GetObjectSearchResults(searchQueryDto);
+            return await _searchApiRepository.GetObjectSearchResults(searchApiQueryDto);
         }
     }
 }

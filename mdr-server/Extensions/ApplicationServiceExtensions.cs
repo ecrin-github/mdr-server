@@ -15,7 +15,7 @@ namespace mdr_server.Extensions
 
             services.AddScoped<IDataMapper, DataMapper>();
             
-            services.AddScoped<ISearchRepository, SearchRepository>();
+            services.AddScoped<ISearchApiRepository, SearchApiRepository>();
             services.AddScoped<IApiRepository, ApiRepository>();
             services.AddScoped<IStudyRepository, StudyRepository>();
             services.AddScoped<IObjectRepository, ObjectRepository>();

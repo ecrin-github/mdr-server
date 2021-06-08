@@ -1,8 +1,7 @@
 namespace mdr_server.DTOs.Queries
 {
-    public class SearchQueryDto : BaseQueryDto
+    public class SearchApiQueryDto : BaseQueryDto
     {
-        public string Index { get; set; }
         public object ElasticQuery { get; set; }
     }
 }
