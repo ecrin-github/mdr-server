@@ -24,7 +24,7 @@ namespace mdr_server.Data
 
         private static int? CalculateStartFrom(int? page, int? pageSize)
         {
-            if (page == null || pageSize == null) return null;
+            if (page != null && pageSize == null) return null;
             var startFrom = ((page + 1) * pageSize) - pageSize;
             if (startFrom == 1 && pageSize == 1)
             {
