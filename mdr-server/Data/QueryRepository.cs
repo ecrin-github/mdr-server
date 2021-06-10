@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using mdr_server.DTOs.APIs;
-using mdr_server.DTOs.Study;
+using mdr_server.Contracts.v1.Requests.Query;
+using mdr_server.Contracts.v1.Responses;
 using mdr_server.Entities.Object;
 using mdr_server.Entities.Study;
 using mdr_server.Entities.Types;
@@ -11,12 +11,12 @@ using Nest;
 
 namespace mdr_server.Data
 {
-    public class ApiRepository : IApiRepository
+    public class QueryRepository : IQueryRepository
     {
         private readonly IElasticSearchService _elasticSearchService;
         private readonly IDataMapper _dataMapper;
 
-        public ApiRepository(IElasticSearchService elasticSearchService, IDataMapper dataMapper)
+        public QueryRepository(IElasticSearchService elasticSearchService, IDataMapper dataMapper)
         {
             _elasticSearchService = elasticSearchService;
             _dataMapper = dataMapper;
@@ -49,11 +49,11 @@ namespace mdr_server.Data
             return identifierTypes.Find(x => x.Id == id)?.Name;
         }
         
-        public async Task<List<StudyDto>> SpecificStudyApi(ApiSpecificStudyDto apiSpecificStudyDto)
+        public async Task<List<StudyListResponse>> GetSpecificStudy(SpecificStudyRequest specificStudyRequest)
         {
-            var startFrom = CalculateStartFrom(apiSpecificStudyDto.Page, apiSpecificStudyDto.PageSize);
+            var startFrom = CalculateStartFrom(specificStudyRequest.Page, specificStudyRequest.PageSize);
 
-            var identifierType = GetIdentifierType(apiSpecificStudyDto.SearchType);
+            var identifierType = GetIdentifierType(specificStudyRequest.SearchType);
             
             SearchRequest<Study> searchRequest;
             if (startFrom != null)
@@ -61,13 +61,13 @@ namespace mdr_server.Data
                 searchRequest = new SearchRequest<Study>(Indices.Index("study"))
                 {
                     From = startFrom,
-                    Size = apiSpecificStudyDto.PageSize,
+                    Size = specificStudyRequest.PageSize,
                     Query = new NestedQuery()
                     {
                         Name = "",
                         Path = new Field("study_identifiers"),
                         Query = new TermQuery() {Field = Infer.Field<Study>(p => p.StudyIdentifiers.First().IdentifierType), Value = identifierType} &&
-                                new TermQuery() {Field = Infer.Field<Study>(p => p.StudyIdentifiers.First().IdentifierValue), Value = apiSpecificStudyDto.SearchValue}
+                                new TermQuery() {Field = Infer.Field<Study>(p => p.StudyIdentifiers.First().IdentifierValue), Value = specificStudyRequest.SearchValue}
                     }
                 };
             }
@@ -80,7 +80,7 @@ namespace mdr_server.Data
                         Name = "",
                         Path = new Field("study_identifiers"),
                         Query = new TermQuery() {Field = new Field("study_identifiers.identifier_type"), Value = identifierType} &&
-                                new TermQuery() {Field = new Field("study_identifiers.identifier_value"), Value = apiSpecificStudyDto.SearchValue}
+                                new TermQuery() {Field = new Field("study_identifiers.identifier_value"), Value = specificStudyRequest.SearchValue}
                     }
                 };
             }
@@ -92,15 +92,15 @@ namespace mdr_server.Data
             
         }
 
-        public async Task<List<StudyDto>> ByStudyCharacteristicsApi(ApiStudyCharacteristicsDto apiStudyCharacteristicsDto)
+        public async Task<List<StudyListResponse>> GetByStudyCharacteristics(StudyCharacteristicsRequest studyCharacteristicsRequest)
         {
-            var startFrom = CalculateStartFrom(apiStudyCharacteristicsDto.Page, apiStudyCharacteristicsDto.PageSize);
+            var startFrom = CalculateStartFrom(studyCharacteristicsRequest.Page, studyCharacteristicsRequest.PageSize);
 
             var shouldClause = new List<QueryContainer>();
             shouldClause.Add(new SimpleQueryStringQuery()
             {
                 Fields = Infer.Field<Study>(f => f.DisplayTitle),
-                Query = apiStudyCharacteristicsDto.TitleContains,
+                Query = studyCharacteristicsRequest.TitleContains,
                 DefaultOperator = Operator.And
             });
             shouldClause.Add(new NestedQuery()
@@ -109,7 +109,7 @@ namespace mdr_server.Data
                 Query = new SimpleQueryStringQuery()
                 {
                     Fields = Infer.Field<Study>(f => f.StudyTitles.First().TitleText),
-                    Query = apiStudyCharacteristicsDto.TitleContains,
+                    Query = studyCharacteristicsRequest.TitleContains,
                     DefaultOperator = Operator.And
                 }
             });
@@ -120,7 +120,7 @@ namespace mdr_server.Data
                 Should = shouldClause
             });
 
-            if (!string.IsNullOrEmpty(apiStudyCharacteristicsDto.TopicsInclude))
+            if (!string.IsNullOrEmpty(studyCharacteristicsRequest.TopicsInclude))
             {
                 queryClauses.Add(new NestedQuery()
                 {
@@ -128,14 +128,14 @@ namespace mdr_server.Data
                     Query = new SimpleQueryStringQuery()
                     {
                         Fields = Infer.Field<Study>(f => f.StudyTopics.First().TopicValue),
-                        Query = apiStudyCharacteristicsDto.TopicsInclude,
+                        Query = studyCharacteristicsRequest.TopicsInclude,
                         DefaultOperator = Operator.And
                     }
                 });
             }
             
             var boolQuery = new BoolQuery();
-            if (apiStudyCharacteristicsDto.LogicalOperator == "and")
+            if (studyCharacteristicsRequest.LogicalOperator == "and")
             {
                 boolQuery.Must = queryClauses;
             }
@@ -150,7 +150,7 @@ namespace mdr_server.Data
                 searchRequest = new SearchRequest<Study>(Indices.Index("study"))
                 {
                     From = startFrom,
-                    Size = apiStudyCharacteristicsDto.PageSize,
+                    Size = studyCharacteristicsRequest.PageSize,
                     Query = boolQuery
                 };
             }
@@ -170,18 +170,18 @@ namespace mdr_server.Data
             }
         }
 
-        public async Task<List<StudyDto>> ViaPublishedPaperApi(ApiViaPublishedPaperDto apiViaPublishedPaperDto)
+        public async Task<List<StudyListResponse>> GetViaPublishedPaper(ViaPublishedPaperRequest viaPublishedPaperRequest)
         {
-            var startFrom = CalculateStartFrom(apiViaPublishedPaperDto.Page, apiViaPublishedPaperDto.PageSize);
+            var startFrom = CalculateStartFrom(viaPublishedPaperRequest.Page, viaPublishedPaperRequest.PageSize);
 
             var mustQuery = new List<QueryContainer>();
             
-            if (apiViaPublishedPaperDto.SearchType == "doi")
+            if (viaPublishedPaperRequest.SearchType == "doi")
             {
                 mustQuery.Add(new TermQuery()
                 {
                     Field = Infer.Field<Object>(p => p.Doi),
-                    Value = apiViaPublishedPaperDto.SearchValue
+                    Value = viaPublishedPaperRequest.SearchValue
                 });
             }
             else
@@ -189,7 +189,7 @@ namespace mdr_server.Data
                 var shouldClauses = new List<QueryContainer>();
                 shouldClauses.Add(new SimpleQueryStringQuery()
                 {
-                    Query = apiViaPublishedPaperDto.SearchValue,
+                    Query = viaPublishedPaperRequest.SearchValue,
                     Fields = Infer.Field<Object>(p => p.DisplayTitle),
                     DefaultOperator = Operator.And
                 });
@@ -198,7 +198,7 @@ namespace mdr_server.Data
                     Path = Infer.Field<Object>(p => p.ObjectTitles),
                     Query = new SimpleQueryStringQuery()
                     {
-                        Query = apiViaPublishedPaperDto.SearchValue,
+                        Query = viaPublishedPaperRequest.SearchValue,
                         Fields = Infer.Field<Object>(p => p.ObjectTitles.First().TitleText),
                         DefaultOperator = Operator.And
                     }
@@ -215,7 +215,7 @@ namespace mdr_server.Data
                 searchRequest = new SearchRequest<Object>(Indices.Index("data-object"))
                 {
                     From = startFrom,
-                    Size = apiViaPublishedPaperDto.PageSize,
+                    Size = viaPublishedPaperRequest.PageSize,
                     Query = new BoolQuery()
                     {
                         Must = mustQuery
@@ -241,7 +241,7 @@ namespace mdr_server.Data
             }
         }
 
-        public async Task<List<StudyDto>> ByStudyIdApi(ApiStudyIdDto apiStudyIdDto)
+        public async Task<List<StudyListResponse>> GetByStudyId(StudyIdRequest studyIdRequest)
         {
             var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(s => s
                 .Index("study")
@@ -250,7 +250,7 @@ namespace mdr_server.Data
                 .Query(q => q
                     .Term(t => t
                         .Field(p => p.Id)
-                        .Value(apiStudyIdDto.StudyId.ToString())
+                        .Value(studyIdRequest.StudyId.ToString())
                     )
                 )
             );

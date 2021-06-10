@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using mdr_server.DTOs.Queries;
-using mdr_server.DTOs.Study;
+using mdr_server.Contracts.v1.Requests.Query;
+using mdr_server.Contracts.v1.Responses;
 using mdr_server.Entities.Study;
 using mdr_server.Interfaces;
 using Nest;
@@ -11,12 +11,12 @@ using Object = mdr_server.Entities.Object.Object;
 
 namespace mdr_server.Data
 {
-    public class SearchApiRepository : ISearchApiRepository
+    public class RawQueryRepository : IRawQueryRepository
     {
         private readonly IElasticSearchService _elasticSearchService;
         private readonly IDataMapper _dataMapper;
 
-        public SearchApiRepository(IElasticSearchService elasticSearchService, 
+        public RawQueryRepository(IElasticSearchService elasticSearchService, 
             IDataMapper dataMapper)
         {
             _elasticSearchService = elasticSearchService;
@@ -34,10 +34,10 @@ namespace mdr_server.Data
             return startFrom;
         }
         
-        public async Task<List<StudyDto>> GetStudySearchResults(SearchApiQueryDto searchApiQueryDto)
+        public async Task<List<StudyListResponse>> GetStudySearchResults(RawQueryRequest rawQueryRequest)
         {
             
-            var startFrom = CalculateStartFrom(page: searchApiQueryDto.Page, pageSize: searchApiQueryDto.PageSize);
+            var startFrom = CalculateStartFrom(page: rawQueryRequest.Page, pageSize: rawQueryRequest.PageSize);
 
             SearchRequest<Study> searchRequest;
             if (startFrom != null)
@@ -45,15 +45,15 @@ namespace mdr_server.Data
                 searchRequest = new SearchRequest<Study>(Indices.Index("study"))
                 {
                     From = startFrom,
-                    Size = searchApiQueryDto.PageSize,
-                    Query = new RawQuery(JsonSerializer.Serialize(searchApiQueryDto.ElasticQuery))
+                    Size = rawQueryRequest.PageSize,
+                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.ElasticQuery))
                 };
             }
             else
             {
                 searchRequest = new SearchRequest<Study>(Indices.Index("study"))
                 {
-                    Query = new RawQuery(JsonSerializer.Serialize(searchApiQueryDto.ElasticQuery))
+                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.ElasticQuery))
                 };
             }
 
@@ -65,10 +65,10 @@ namespace mdr_server.Data
             }
         }
         
-        public async Task<List<StudyDto>> GetObjectSearchResults(SearchApiQueryDto searchApiQueryDto)
+        public async Task<List<StudyListResponse>> GetObjectSearchResults(RawQueryRequest rawQueryRequest)
         {
             
-            var startFrom = CalculateStartFrom(page: searchApiQueryDto.Page, pageSize: searchApiQueryDto.PageSize);
+            var startFrom = CalculateStartFrom(page: rawQueryRequest.Page, pageSize: rawQueryRequest.PageSize);
             
             SearchRequest<Object> searchRequest;
             if (startFrom != null)
@@ -76,15 +76,15 @@ namespace mdr_server.Data
                 searchRequest = new SearchRequest<Object>(Indices.Index("data-object"))
                 {
                     From = startFrom,
-                    Size = searchApiQueryDto.PageSize,
-                    Query = new RawQuery(JsonSerializer.Serialize(searchApiQueryDto.ElasticQuery))
+                    Size = rawQueryRequest.PageSize,
+                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.ElasticQuery))
                 };
             }
             else
             {
                 searchRequest = new SearchRequest<Object>(Indices.Index("data-object"))
                 {
-                    Query = new RawQuery(JsonSerializer.Serialize(searchApiQueryDto.ElasticQuery))
+                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.ElasticQuery))
                 };
             }
 

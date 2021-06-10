@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using mdr_server.DTOs.Study;
+using mdr_server.Contracts.v1.Responses;
 using mdr_server.Entities.Object;
 using mdr_server.Entities.Study;
 using mdr_server.Interfaces;
@@ -9,22 +9,20 @@ namespace mdr_server.Helpers
 {
     public class DataMapper : IDataMapper
     {
-        private readonly IStudyRepository _studyRepository;
-        private readonly IObjectRepository _objectRepository;
+        private readonly IFetchedDataRepository _fetchedDataRepository;
 
-        public DataMapper(IStudyRepository studyRepository, IObjectRepository objectRepository)
+        public DataMapper(IFetchedDataRepository fetchedDataRepository)
         {
-            _studyRepository = studyRepository;
-            _objectRepository = objectRepository;
+            _fetchedDataRepository = fetchedDataRepository;
         }
         
-        public async Task<List<StudyDto>> MapStudies(List<Study> studies)
+        public async Task<List<StudyListResponse>> MapStudies(List<Study> studies)
         {
-            List<StudyDto> studiesDto = new List<StudyDto>();
+            List<StudyListResponse> studiesDto = new List<StudyListResponse>();
 
             foreach (var study in studies)
             {
-                var studyDto = new StudyDto
+                var studyDto = new StudyListResponse
                 {
                     Id = study.Id,
                     DisplayTitle = study.DisplayTitle,
@@ -41,7 +39,7 @@ namespace mdr_server.Helpers
                     StudyTopics = study.StudyTopics,
                     StudyRelationships = study.StudyRelationships,
                     ProvenanceString = study.ProvenanceString,
-                    LinkedDataObjects = await _objectRepository.GetFetchedObjects(study.LinkedDataObjects)
+                    LinkedDataObjects = await _fetchedDataRepository.GetFetchedObjects(study.LinkedDataObjects)
                 };
                 studiesDto.Add(studyDto);
             }
@@ -49,14 +47,14 @@ namespace mdr_server.Helpers
             return studiesDto;
         }
 
-        public async Task<List<StudyDto>> MapObjects(List<Object> objects)
+        public async Task<List<StudyListResponse>> MapObjects(List<Object> objects)
         {
-            List<StudyDto> studies = new List<StudyDto>();
+            List<StudyListResponse> studies = new List<StudyListResponse>();
 
             foreach (var obj in objects)
             {
-                List<Study> fetchedStudies = await _studyRepository.GetFetchedStudies(obj.LinkedStudies);
-                List<StudyDto> mappedStudies = await MapStudies(fetchedStudies);
+                List<Study> fetchedStudies = await _fetchedDataRepository.GetFetchedStudies(obj.LinkedStudies);
+                List<StudyListResponse> mappedStudies = await MapStudies(fetchedStudies);
                 foreach (var study in mappedStudies)
                 {
                     studies.Add(study);

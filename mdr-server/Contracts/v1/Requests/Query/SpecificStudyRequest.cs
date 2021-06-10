@@ -1,6 +1,6 @@
-namespace mdr_server.DTOs.APIs
+namespace mdr_server.Contracts.v1.Requests.Query
 {
-    public class ApiSpecificStudyDto : ApiBaseQueryDto
+    public class SpecificStudyRequest : BaseQueryRequest
     {
         public int SearchType { get; set; }
         public string SearchValue { get; set; }

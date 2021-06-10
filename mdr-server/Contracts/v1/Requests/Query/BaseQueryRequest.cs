@@ -1,6 +1,6 @@
-namespace mdr_server.DTOs.APIs
+namespace mdr_server.Contracts.v1.Requests.Query
 {
-    public class ApiBaseQueryDto
+    public class BaseQueryRequest
     {
         public int? Page { get; set; }
         public int? PageSize { get; set; }

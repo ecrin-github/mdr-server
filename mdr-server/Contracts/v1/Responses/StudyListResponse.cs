@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using mdr_server.Entities.Study;
 
-namespace mdr_server.DTOs.Study
+namespace mdr_server.Contracts.v1.Responses
 {
-    public class StudyDto
+    public class StudyListResponse
     {
         public int? Id { get; set; }
         public string DisplayTitle { get; set; }

@@ -1,6 +1,6 @@
-namespace mdr_server.DTOs.APIs
+namespace mdr_server.Contracts.v1.Requests.Query
 {
-    public class ApiViaPublishedPaperDto : ApiBaseQueryDto
+    public class ViaPublishedPaperRequest : BaseQueryRequest
     {
         public string SearchType { get; set; }
         public string SearchValue { get; set; }
