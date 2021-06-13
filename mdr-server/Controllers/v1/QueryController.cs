@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using mdr_server.Contracts.v1;
 using mdr_server.Contracts.v1.Requests.Query;
@@ -19,27 +18,50 @@ namespace mdr_server.Controllers.v1
         }
 
         [HttpPost(ApiRoutes.Query.GetSpecificStudy)]
-        public async Task<List<StudyListResponse>> GetSpecificStudy(SpecificStudyRequest specificStudyRequest)
+        public async Task<ActionResult<SearchResponse>> GetSpecificStudy(SpecificStudyRequest specificStudyRequest)
         {
-            return await _queryRepository.GetSpecificStudy(specificStudyRequest);
+            var response = await _queryRepository.GetSpecificStudy(specificStudyRequest);
+            return Ok(new SearchResponse()
+            {
+                Total = response.Total,
+                Page = specificStudyRequest.Page,
+                Size = specificStudyRequest.PageSize,
+                Data = response.Data
+            });
         }
         
         [HttpPost(ApiRoutes.Query.GetByStudyCharacteristics)]
-        public async Task<List<StudyListResponse>> GetByStudyCharacteristics(StudyCharacteristicsRequest studyCharacteristicsRequest)
+        public async Task<ActionResult<SearchResponse>> GetByStudyCharacteristics(StudyCharacteristicsRequest studyCharacteristicsRequest)
         {
-            return await _queryRepository.GetByStudyCharacteristics(studyCharacteristicsRequest);
+            var response = await _queryRepository.GetByStudyCharacteristics(studyCharacteristicsRequest);
+            return Ok(new SearchResponse()
+            {
+                Total = response.Total,
+                Page = studyCharacteristicsRequest.Page,
+                Size = studyCharacteristicsRequest.PageSize,
+                Data = response.Data
+            });
         }
         
         [HttpPost(ApiRoutes.Query.GetViaPublishedPaper)]
-        public async Task<List<StudyListResponse>> GetViaPublishedPaper(ViaPublishedPaperRequest viaPublishedPaperRequest)
+        public async Task<ActionResult<SearchResponse>> GetViaPublishedPaper(ViaPublishedPaperRequest viaPublishedPaperRequest)
         {
-            return await _queryRepository.GetViaPublishedPaper(viaPublishedPaperRequest);
+            var response = await _queryRepository.GetViaPublishedPaper(viaPublishedPaperRequest);
+            return Ok(new SearchResponse()
+            {
+                Total = response.Total,
+                Page = viaPublishedPaperRequest.Page,
+                Size = viaPublishedPaperRequest.PageSize,
+                Data = response.Data
+            });
+
         }
         
         [HttpPost(ApiRoutes.Query.GetByStudyId)]
-        public async Task<List<StudyListResponse>> GetByStudyId(StudyIdRequest studyIdRequest)
+        public async Task<ActionResult<StudyListResponse>> GetByStudyId(StudyIdRequest studyIdRequest)
         {
-            return await _queryRepository.GetByStudyId(studyIdRequest);
+            var response = await _queryRepository.GetByStudyId(studyIdRequest);
+            return Ok(response);
         }
     }
 }

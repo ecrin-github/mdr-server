@@ -7,9 +7,9 @@ namespace mdr_server.Interfaces
 {
     public interface IQueryRepository
     {
-        Task<List<StudyListResponse>> GetSpecificStudy(SpecificStudyRequest specificStudyRequest);
-        Task<List<StudyListResponse>> GetByStudyCharacteristics(StudyCharacteristicsRequest studyCharacteristicsRequest);
-        Task<List<StudyListResponse>> GetViaPublishedPaper(ViaPublishedPaperRequest viaPublishedPaperRequest);
-        Task<List<StudyListResponse>> GetByStudyId(StudyIdRequest studyIdRequest);
+        Task<BaseResponse> GetSpecificStudy(SpecificStudyRequest specificStudyRequest);
+        Task<BaseResponse> GetByStudyCharacteristics(StudyCharacteristicsRequest studyCharacteristicsRequest);
+        Task<BaseResponse> GetViaPublishedPaper(ViaPublishedPaperRequest viaPublishedPaperRequest);
+        Task<IEnumerable<StudyListResponse>> GetByStudyId(StudyIdRequest studyIdRequest);
     }
 }

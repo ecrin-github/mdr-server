@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -34,7 +33,7 @@ namespace mdr_server.Data
             return startFrom;
         }
         
-        public async Task<List<StudyListResponse>> GetStudySearchResults(RawQueryRequest rawQueryRequest)
+        public async Task<BaseResponse> GetStudySearchResults(RawQueryRequest rawQueryRequest)
         {
             
             var startFrom = CalculateStartFrom(page: rawQueryRequest.Page, pageSize: rawQueryRequest.PageSize);
@@ -59,13 +58,17 @@ namespace mdr_server.Data
 
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);
-                var studies = results.Documents.ToList();
-
-                return await _dataMapper.MapStudies(studies);
+                var total = results.Total;
+                var studies = await _dataMapper.MapStudies(results.Documents.ToList());
+                return new BaseResponse()
+                {
+                    Total = total,
+                    Data = studies
+                };
             }
         }
         
-        public async Task<List<StudyListResponse>> GetObjectSearchResults(RawQueryRequest rawQueryRequest)
+        public async Task<BaseResponse> GetObjectSearchResults(RawQueryRequest rawQueryRequest)
         {
             
             var startFrom = CalculateStartFrom(page: rawQueryRequest.Page, pageSize: rawQueryRequest.PageSize);
@@ -90,9 +93,13 @@ namespace mdr_server.Data
 
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Object>(searchRequest);
-                var objects = results.Documents.ToList();
+                var studies = await _dataMapper.MapObjects(results.Documents.ToList());
 
-                return await _dataMapper.MapObjects(objects);
+                return new BaseResponse()
+                {
+                    Total = studies.Count,
+                    Data = studies
+                };
             }
         }
     }

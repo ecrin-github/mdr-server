@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using mdr_server.Contracts.v1;
 using mdr_server.Contracts.v1.Requests.Query;
@@ -19,15 +18,29 @@ namespace mdr_server.Controllers.v1
         }
 
         [HttpPost(ApiRoutes.RawQuery.GetStudySearchResults)]
-        public async Task<List<StudyListResponse>> GetStudySearchResults(RawQueryRequest rawQueryRequest)
+        public async Task<ActionResult<SearchResponse>> GetStudySearchResults(RawQueryRequest rawQueryRequest)
         {
-            return await _rawQueryRepository.GetStudySearchResults(rawQueryRequest);
+            var response = await _rawQueryRepository.GetStudySearchResults(rawQueryRequest);
+            return Ok(new SearchResponse()
+            {
+                Total = response.Total,
+                Page = rawQueryRequest.Page,
+                Size = rawQueryRequest.PageSize,
+                Data = response.Data
+            });
         }
         
         [HttpPost(ApiRoutes.RawQuery.GetObjectSearchResults)]
-        public async Task<List<StudyListResponse>> GetObjectSearchResults(RawQueryRequest rawQueryRequest)
+        public async Task<ActionResult<SearchResponse>> GetObjectSearchResults(RawQueryRequest rawQueryRequest)
         {
-            return await _rawQueryRepository.GetObjectSearchResults(rawQueryRequest);
+            var response = await _rawQueryRepository.GetObjectSearchResults(rawQueryRequest);
+            return Ok(new SearchResponse()
+            {
+                Total = response.Total,
+                Page = rawQueryRequest.Page,
+                Size = rawQueryRequest.PageSize,
+                Data = response.Data
+            });
         }
     }
 }

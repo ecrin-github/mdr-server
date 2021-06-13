@@ -49,7 +49,7 @@ namespace mdr_server.Data
             return identifierTypes.Find(x => x.Id == id)?.Name;
         }
         
-        public async Task<List<StudyListResponse>> GetSpecificStudy(SpecificStudyRequest specificStudyRequest)
+        public async Task<BaseResponse> GetSpecificStudy(SpecificStudyRequest specificStudyRequest)
         {
             var startFrom = CalculateStartFrom(specificStudyRequest.Page, specificStudyRequest.PageSize);
 
@@ -86,13 +86,17 @@ namespace mdr_server.Data
             }
             
             var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);
-            var studies = results.Documents.ToList();
-
-            return await _dataMapper.MapStudies(studies);
+            var total = results.Total;
+            var studies = await _dataMapper.MapStudies(results.Documents.ToList());
+            return new BaseResponse()
+            {
+                Total = total,
+                Data = studies
+            };
             
         }
 
-        public async Task<List<StudyListResponse>> GetByStudyCharacteristics(StudyCharacteristicsRequest studyCharacteristicsRequest)
+        public async Task<BaseResponse> GetByStudyCharacteristics(StudyCharacteristicsRequest studyCharacteristicsRequest)
         {
             var startFrom = CalculateStartFrom(studyCharacteristicsRequest.Page, studyCharacteristicsRequest.PageSize);
 
@@ -164,13 +168,17 @@ namespace mdr_server.Data
             
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);
-                var studies = results.Documents.ToList();
-
-                return await _dataMapper.MapStudies(studies);
+                var total = results.Total;
+                var studies = await _dataMapper.MapStudies(results.Documents.ToList());
+                return new BaseResponse()
+                {
+                    Total = total,
+                    Data = studies
+                };
             }
         }
 
-        public async Task<List<StudyListResponse>> GetViaPublishedPaper(ViaPublishedPaperRequest viaPublishedPaperRequest)
+        public async Task<BaseResponse> GetViaPublishedPaper(ViaPublishedPaperRequest viaPublishedPaperRequest)
         {
             var startFrom = CalculateStartFrom(viaPublishedPaperRequest.Page, viaPublishedPaperRequest.PageSize);
 
@@ -235,13 +243,17 @@ namespace mdr_server.Data
             
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Object>(searchRequest);
-                var objects = results.Documents.ToList();
+                var studies = await _dataMapper.MapObjects(results.Documents.ToList());
 
-                return await _dataMapper.MapObjects(objects);
+                return new BaseResponse()
+                {
+                    Total = studies.Count,
+                    Data = studies
+                };
             }
         }
 
-        public async Task<List<StudyListResponse>> GetByStudyId(StudyIdRequest studyIdRequest)
+        public async Task<IEnumerable<StudyListResponse>> GetByStudyId(StudyIdRequest studyIdRequest)
         {
             var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(s => s
                 .Index("study")
