@@ -36,7 +36,7 @@ namespace mdr_server.Data
         public async Task<BaseResponse> GetStudySearchResults(RawQueryRequest rawQueryRequest)
         {
             
-            var startFrom = CalculateStartFrom(page: rawQueryRequest.Page, pageSize: rawQueryRequest.PageSize);
+            var startFrom = CalculateStartFrom(page: rawQueryRequest.Page, pageSize: rawQueryRequest.Size);
 
             SearchRequest<Study> searchRequest;
             if (startFrom != null)
@@ -44,7 +44,7 @@ namespace mdr_server.Data
                 searchRequest = new SearchRequest<Study>(Indices.Index("study"))
                 {
                     From = startFrom,
-                    Size = rawQueryRequest.PageSize,
+                    Size = rawQueryRequest.Size,
                     Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.ElasticQuery))
                 };
             }
@@ -71,7 +71,7 @@ namespace mdr_server.Data
         public async Task<BaseResponse> GetObjectSearchResults(RawQueryRequest rawQueryRequest)
         {
             
-            var startFrom = CalculateStartFrom(page: rawQueryRequest.Page, pageSize: rawQueryRequest.PageSize);
+            var startFrom = CalculateStartFrom(page: rawQueryRequest.Page, pageSize: rawQueryRequest.Size);
             
             SearchRequest<Object> searchRequest;
             if (startFrom != null)
@@ -79,7 +79,7 @@ namespace mdr_server.Data
                 searchRequest = new SearchRequest<Object>(Indices.Index("data-object"))
                 {
                     From = startFrom,
-                    Size = rawQueryRequest.PageSize,
+                    Size = rawQueryRequest.Size,
                     Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.ElasticQuery))
                 };
             }

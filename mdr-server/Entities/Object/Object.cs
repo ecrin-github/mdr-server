@@ -59,39 +59,39 @@ namespace mdr_server.Entities.Object
         
         [Nested]
         [PropertyName("object_instances")]
-        public List<ObjectInstance> ObjectInstances { get; set; }
+        public ICollection<ObjectInstance> ObjectInstances { get; set; }
         
         [Nested]
         [PropertyName("object_titles")]
-        public List<ObjectTitle> ObjectTitles { get; set; }
+        public ICollection<ObjectTitle> ObjectTitles { get; set; }
         
         [Nested]
         [PropertyName("object_dates")]
-        public List<ObjectDate> ObjectDates { get; set; }
+        public ICollection<ObjectDate> ObjectDates { get; set; }
         
         [Nested]
         [PropertyName("object_contributors")]
-        public List<ObjectContributor> ObjectContributors { get; set; }
+        public ICollection<ObjectContributor> ObjectContributors { get; set; }
         
         [Nested]
         [PropertyName("object_topics")]
-        public List<ObjectTopic> ObjectTopics { get; set; }
+        public ICollection<ObjectTopic> ObjectTopics { get; set; }
         
         [Nested]
         [PropertyName("object_identifiers")]
-        public List<ObjectIdentifier> ObjectIdentifiers { get; set; }
+        public ICollection<ObjectIdentifier> ObjectIdentifiers { get; set; }
         
         [Nested]
         [PropertyName("object_descriptions")]
-        public List<ObjectDescription> ObjectDescriptions { get; set; }
+        public ICollection<ObjectDescription> ObjectDescriptions { get; set; }
         
         [Nested]
         [PropertyName("object_rights")]
-        public List<ObjectRight> ObjectRights { get; set; }
+        public ICollection<ObjectRight> ObjectRights { get; set; }
         
         [Nested]
         [PropertyName("object_relationships")]
-        public List<ObjectRelationship> ObjectRelationships { get; set; }
+        public ICollection<ObjectRelationship> ObjectRelationships { get; set; }
         
         [Number(Name = "linked_studies")]
         public int[] LinkedStudies { get; set; }

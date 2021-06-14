@@ -51,7 +51,7 @@ namespace mdr_server.Data
         
         public async Task<BaseResponse> GetSpecificStudy(SpecificStudyRequest specificStudyRequest)
         {
-            var startFrom = CalculateStartFrom(specificStudyRequest.Page, specificStudyRequest.PageSize);
+            var startFrom = CalculateStartFrom(specificStudyRequest.Page, specificStudyRequest.Size);
 
             var identifierType = GetIdentifierType(specificStudyRequest.SearchType);
             
@@ -61,7 +61,7 @@ namespace mdr_server.Data
                 searchRequest = new SearchRequest<Study>(Indices.Index("study"))
                 {
                     From = startFrom,
-                    Size = specificStudyRequest.PageSize,
+                    Size = specificStudyRequest.Size,
                     Query = new NestedQuery()
                     {
                         Name = "",
@@ -98,7 +98,7 @@ namespace mdr_server.Data
 
         public async Task<BaseResponse> GetByStudyCharacteristics(StudyCharacteristicsRequest studyCharacteristicsRequest)
         {
-            var startFrom = CalculateStartFrom(studyCharacteristicsRequest.Page, studyCharacteristicsRequest.PageSize);
+            var startFrom = CalculateStartFrom(studyCharacteristicsRequest.Page, studyCharacteristicsRequest.Size);
 
             var shouldClause = new List<QueryContainer>();
             shouldClause.Add(new SimpleQueryStringQuery()
@@ -154,7 +154,7 @@ namespace mdr_server.Data
                 searchRequest = new SearchRequest<Study>(Indices.Index("study"))
                 {
                     From = startFrom,
-                    Size = studyCharacteristicsRequest.PageSize,
+                    Size = studyCharacteristicsRequest.Size,
                     Query = boolQuery
                 };
             }
@@ -180,7 +180,7 @@ namespace mdr_server.Data
 
         public async Task<BaseResponse> GetViaPublishedPaper(ViaPublishedPaperRequest viaPublishedPaperRequest)
         {
-            var startFrom = CalculateStartFrom(viaPublishedPaperRequest.Page, viaPublishedPaperRequest.PageSize);
+            var startFrom = CalculateStartFrom(viaPublishedPaperRequest.Page, viaPublishedPaperRequest.Size);
 
             var mustQuery = new List<QueryContainer>();
             
@@ -223,7 +223,7 @@ namespace mdr_server.Data
                 searchRequest = new SearchRequest<Object>(Indices.Index("data-object"))
                 {
                     From = startFrom,
-                    Size = viaPublishedPaperRequest.PageSize,
+                    Size = viaPublishedPaperRequest.Size,
                     Query = new BoolQuery()
                     {
                         Must = mustQuery

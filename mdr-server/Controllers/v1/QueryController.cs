@@ -25,7 +25,7 @@ namespace mdr_server.Controllers.v1
             {
                 Total = response.Total,
                 Page = specificStudyRequest.Page,
-                Size = specificStudyRequest.PageSize,
+                Size = specificStudyRequest.Size,
                 Data = response.Data
             });
         }
@@ -38,7 +38,7 @@ namespace mdr_server.Controllers.v1
             {
                 Total = response.Total,
                 Page = studyCharacteristicsRequest.Page,
-                Size = studyCharacteristicsRequest.PageSize,
+                Size = studyCharacteristicsRequest.Size,
                 Data = response.Data
             });
         }
@@ -51,7 +51,7 @@ namespace mdr_server.Controllers.v1
             {
                 Total = response.Total,
                 Page = viaPublishedPaperRequest.Page,
-                Size = viaPublishedPaperRequest.PageSize,
+                Size = viaPublishedPaperRequest.Size,
                 Data = response.Data
             });
 

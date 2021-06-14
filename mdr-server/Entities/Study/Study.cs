@@ -41,23 +41,23 @@ namespace mdr_server.Entities.Study
         
         [Nested]
         [PropertyName("study_identifiers")]
-        public List<StudyIdentifier> StudyIdentifiers { get; set; }
+        public ICollection<StudyIdentifier> StudyIdentifiers { get; set; }
         
         [Nested]
         [PropertyName("study_titles")]
-        public List<StudyTitle> StudyTitles { get; set; }
+        public ICollection<StudyTitle> StudyTitles { get; set; }
         
         [Nested]
         [PropertyName("study_features")]
-        public List<StudyFeature> StudyFeatures { get; set; }
+        public ICollection<StudyFeature> StudyFeatures { get; set; }
         
         [Nested]
         [PropertyName("study_topics")]
-        public List<StudyTopic> StudyTopics { get; set; }
+        public ICollection<StudyTopic> StudyTopics { get; set; }
         
         [Nested]
         [PropertyName("study_relationships")]
-        public List<StudyRelation> StudyRelationships { get; set; }
+        public ICollection<StudyRelation> StudyRelationships { get; set; }
         
         [Text(Name="provenance_string")]
         public string ProvenanceString { get; set; }

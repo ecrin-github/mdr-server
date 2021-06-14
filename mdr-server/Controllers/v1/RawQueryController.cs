@@ -25,7 +25,7 @@ namespace mdr_server.Controllers.v1
             {
                 Total = response.Total,
                 Page = rawQueryRequest.Page,
-                Size = rawQueryRequest.PageSize,
+                Size = rawQueryRequest.Size,
                 Data = response.Data
             });
         }
@@ -38,7 +38,7 @@ namespace mdr_server.Controllers.v1
             {
                 Total = response.Total,
                 Page = rawQueryRequest.Page,
-                Size = rawQueryRequest.PageSize,
+                Size = rawQueryRequest.Size,
                 Data = response.Data
             });
         }

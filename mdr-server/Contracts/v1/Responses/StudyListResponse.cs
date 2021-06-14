@@ -14,12 +14,12 @@ namespace mdr_server.Contracts.v1.Responses
         public int? StudyEnrolment { get; set; }
         public MinAge MinAge { get; set; }
         public MaxAge MaxAge { get; set; }
-        public List<StudyIdentifier> StudyIdentifiers { get; set; }
-        public List<StudyTitle> StudyTitles { get; set; }
-        public List<StudyFeature> StudyFeatures { get; set; }
-        public List<StudyTopic> StudyTopics { get; set; }
-        public List<StudyRelation> StudyRelationships { get; set; }
+        public ICollection<StudyIdentifier> StudyIdentifiers { get; set; }
+        public ICollection<StudyTitle> StudyTitles { get; set; }
+        public ICollection<StudyFeature> StudyFeatures { get; set; }
+        public ICollection<StudyTopic> StudyTopics { get; set; }
+        public ICollection<StudyRelation> StudyRelationships { get; set; }
         public string ProvenanceString { get; set; }
-        public List<Entities.Object.Object> LinkedDataObjects { get; set; }
+        public ICollection<Entities.Object.Object> LinkedDataObjects { get; set; }
     }
 }
