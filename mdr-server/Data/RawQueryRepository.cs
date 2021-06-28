@@ -58,11 +58,10 @@ namespace mdr_server.Data
 
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);
-                var total = results.Total;
                 var studies = await _dataMapper.MapStudies(results.Documents.ToList());
                 return new BaseResponse()
                 {
-                    Total = total,
+                    Total = results.Total,
                     Data = studies
                 };
             }
@@ -97,7 +96,7 @@ namespace mdr_server.Data
 
                 return new BaseResponse()
                 {
-                    Total = studies.Count,
+                    Total = results.Total,
                     Data = studies
                 };
             }

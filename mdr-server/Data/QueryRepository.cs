@@ -86,11 +86,10 @@ namespace mdr_server.Data
             }
             
             var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);
-            var total = results.Total;
             var studies = await _dataMapper.MapStudies(results.Documents.ToList());
             return new BaseResponse()
             {
-                Total = total,
+                Total = results.Total,
                 Data = studies
             };
             
@@ -168,11 +167,10 @@ namespace mdr_server.Data
             
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);
-                var total = results.Total;
                 var studies = await _dataMapper.MapStudies(results.Documents.ToList());
                 return new BaseResponse()
                 {
-                    Total = total,
+                    Total = results.Total,
                     Data = studies
                 };
             }
@@ -243,12 +241,11 @@ namespace mdr_server.Data
             
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Object>(searchRequest);
-                var total = results.Total;
                 var studies = await _dataMapper.MapObjects(results.Documents.ToList());
 
                 return new BaseResponse()
                 {
-                    Total = total,
+                    Total = results.Total,
                     Data = studies
                 };
             }
