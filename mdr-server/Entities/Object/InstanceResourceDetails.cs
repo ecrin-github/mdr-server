@@ -4,6 +4,9 @@ namespace mdr_server.Entities.Object
 {
     public class InstanceResourceDetails
     {
+        [Number(Name = "type_id")]
+        public int TypeId { get; set; }
+        
         [Text(Name = "type_name")]
         public string TypeName { get; set; }
         

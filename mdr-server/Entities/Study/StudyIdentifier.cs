@@ -1,3 +1,4 @@
+using mdr_server.Entities.Common;
 using Nest;
 
 namespace mdr_server.Entities.Study
@@ -5,13 +6,14 @@ namespace mdr_server.Entities.Study
     public class StudyIdentifier
     {
         [Number(Name = "id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
         
         [Text(Name = "identifier_value")]
         public string IdentifierValue { get; set; }
         
-        [Text(Name = "identifier_type")]
-        public string IdentifierType { get; set; }
+        [Object]
+        [PropertyName("identifier_type")]
+        public IdentifierType IdentifierType { get; set; }
         
         [Date(Name = "identifier_date", Format = "yyyy MMM dd")]
         public string IdentifierDate { get; set; }
@@ -19,7 +21,8 @@ namespace mdr_server.Entities.Study
         [Text(Name = "identifier_link")]
         public string IdentifierLink { get; set; }
         
-        [Text(Name = "identifier_org")]
-        public string IdentifierOrg { get; set; }
+        [Object]
+        [PropertyName("identifier_org")]
+        public IdentifierOrg IdentifierOrg { get; set; }
     }
 }

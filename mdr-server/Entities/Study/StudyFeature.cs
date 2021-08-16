@@ -5,12 +5,14 @@ namespace mdr_server.Entities.Study
     public class StudyFeature
     {
         [Number(Name = "id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
         
-        [Text(Name = "feature_type")]
-        public string FeatureType { get; set; }
+        [Object]
+        [PropertyName("feature_type")]
+        public FeatureType FeatureType { get; set; }
         
-        [Text(Name = "feature_value")]
-        public string FeatureValue { get; set; }
+        [Object]
+        [PropertyName("feature_value")]
+        public FeatureValue FeatureValue { get; set; }
     }
 }

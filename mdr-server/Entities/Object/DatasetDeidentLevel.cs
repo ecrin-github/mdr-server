@@ -4,6 +4,9 @@ namespace mdr_server.Entities.Object
 {
     public class DatasetDeidentLevel
     {
+        [Number(Name = "deident_type_id")]
+        public int DeidentTypeId { get; set; }
+        
         [Text(Name = "deident_type")]
         public string DeidentType { get; set; }
         

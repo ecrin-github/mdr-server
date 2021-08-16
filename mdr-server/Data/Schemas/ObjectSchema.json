@@ -1,38 +1,39 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://ecrin.org/json_schemas/mdrdataobject/v4.json",
+  "$id": "http://ecrin.org/json_schemas/mdrdataobject/v6.json",
   "title": "XDC Data Object definition",
-  "description": "ECRIN Metadata Repository for clinical research objects, Data Object JSON definition, version 5 October 2020",
+  "description": "ECRIN Metadata Repository for clinical research objects, Data Object JSON definition, version 6 August 2021",
   "type": "object",
-  "required": ["id", "data_object_title", "class", "type", "publication_year", "access_type"],
+  "required": [
+    "id",
+    "data_object_title",
+    "object_class",
+    "object_type",
+    "publication_year",
+    "access_type"
+  ],
   "additionalProperties": false,
   "properties": {
-
     "file_type": {
       "type": "string",
       "description": "always 'data_object'"
     },
-
     "id": {
       "type": "integer",
       "description": "Internal accession number of the data object within the MDR database"
     },
-
     "doi": {
       "type": "string",
       "description": "The doi (without prefixes, beginning with '10...') of the object, if it has one"
     },
-
     "display_title": {
       "type": "string",
       "description": "The title of the object - if a unique title is not part of the source title it may be a composite of the study title and the object type"
     },
-
     "version": {
       "type": "string",
       "description": "Indication of version if there is one, in the format of the source data"
     },
-
     "object_class": {
       "type": "object",
       "description": "The broad type of object, e.g. 'Dataset', or 'Text'",
@@ -47,7 +48,6 @@
         }
       }
     },
-
     "object_type": {
       "type": "object",
       "description": "A more detailed classification of the object type, e.g. 'Study Protocol', or 'IPD dataset’",
@@ -62,17 +62,14 @@
         }
       }
     },
-
     "publication_year": {
       "type": "integer",
       "description": "A four digit number indicating the year the object was published, i.e. became available"
     },
-
     "lang_code": {
       "type": "string",
       "description": "A two letter ISO 369-1 code indicating the language of the data object. Occasionaly - especially with journal articles - two or more such codes, separated by a comma"
     },
-
     "managing_organisation": {
       "type": "object",
       "description": "The organisation managing the object, in particular that determines access to it",
@@ -84,10 +81,13 @@
         "name": {
           "type": "string",
           "description": "The default name of the organisation within the ECRIN context database, if it exists, or the name of the organisation as supplied by the source data"
+        },
+        "ror_id": {
+          "type": "string",
+          "description": "The id of the organisation, if knowm, within the ROR (Research Organisation Registry) system. This is a URL linking to the ROR resource."
         }
       }
     },
-
     "access_type": {
       "type": "object",
       "description": "The type of  access to the object, e.g. 'Public download (self-attestation required)', or 'Case by case download'",
@@ -102,7 +102,6 @@
         }
       }
     },
-
     "access_details": {
       "type": "object",
       "description": "Further details of the access (especially if non public)",
@@ -123,12 +122,10 @@
         }
       }
     },
-
     "eosc_category": {
       "type": "integer",
       "description": "An integer between 0 and 3 inclusive, representing the type of data object / access management required, using a recommended eosc categorisation"
     },
-
     "dataset_record_keys": {
       "type": "object",
       "description": "For dataset objects only, provides an indication of the types of keys used in the dataset, in particular if they are claimed to be anonymous or pseudonymous",
@@ -147,7 +144,6 @@
         }
       }
     },
-
     "dataset_deident_level": {
       "type": "object",
       "description": "For dataset objects only, provides an indication of the level of deidentification of the dataset",
@@ -186,7 +182,6 @@
         }
       }
     },
-
     "dataset_consent": {
       "type": "object",
       "description": "For dataset objects only, provides an indication of the level of explicit consent for secondary use of the data",
@@ -225,13 +220,11 @@
         }
       }
     },
-
     "object_instances": {
       "type": "array",
       "items": {
         "type": "object",
         "description": "A composite object that indicates the nature of a specific instance of a data object, e.g. a file or a web page",
-        "required": ["id", "repository_org", "file_type"],
         "properties": {
           "id": {
             "type": "integer",
@@ -300,13 +293,16 @@
         }
       }
     },
-
     "object_titles": {
       "type": "array",
       "items": {
         "type": "object",
         "description": "A composite object that indicates the type and value of the 'other title'",
-        "required": ["id", "title_type", "title_text"],
+        "required": [
+          "id",
+          "title_type",
+          "title_text"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -341,13 +337,17 @@
         }
       }
     },
-
     "object_dates": {
       "type": "array",
       "items": {
         "type": "object",
         "description": "A composite object that indicates the date and its type",
-        "required": ["id", "date_type", "is_date_range", "start"],
+        "required": [
+          "id",
+          "date_type",
+          "is_date_range",
+          "start"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -367,7 +367,7 @@
               }
             }
           },
-          "is_date_range": {
+          "date_is_range": {
             "type": "boolean",
             "default": false,
             "description": "If true both start and end dates should be considered, otherwise just the start date"
@@ -388,7 +388,6 @@
                 "type": "integer",
                 "description": "An integer indicating the month"
               },
-
               "start_day": {
                 "type": "integer",
                 "description": "An integer indicating the day"
@@ -420,13 +419,15 @@
         }
       }
     },
-
     "object_contributors": {
       "type": "array",
       "items": {
         "type": "object",
         "description": "A composite object that indicates the people and / or organisations that contributed to the data object, directly or indirectly",
-        "required": ["id", "contribution_type"],
+        "required": [
+          "id",
+          "contribution_type"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -448,11 +449,11 @@
           },
           "is_individual": {
             "type": "boolean",
-            "description": "Indicates whether the contributor is an individual, e.g. study lead or paper author, or an organisation, e.g. pharma company or research network."
+            "description": "Indicates whether the contributor is an individual, e.g. study lead or paper author, or an organisation, e.g. pharma company or research network. If an organisation the person objhect will be null. If a person, the organisation object will be null."
           },
           "organisation": {
             "type": "object",
-            "description": "The organisation providing the contribution",
+            "description": "The organisation providing the contribution - not required if the contributor is an individual.",
             "properties": {
               "id": {
                 "type": "integer",
@@ -461,6 +462,10 @@
               "name": {
                 "type": "string",
                 "description": "The default name of the organisation, within the ECRIN context database, if it exists, or the name of the organisation as supplied by the source data"
+              },
+              "ror_id": {
+                "type": "string",
+                "description": "The id of the organisation, if knowm, within the ROR (Research Organisation Registry) system. This is a URL linking to the ROR resource."
               }
             }
           },
@@ -484,22 +489,36 @@
                 "type": "string",
                 "description": "The person's ORCID identifier, if known"
               },
-              "affiliation": {
+              "affiliation_string": {
                 "type": "string",
                 "description": "The person's organisational affiliation as it appears in the source data"
+              },
+              "affiliation_org_id": {
+                "type": "integer",
+                "description": "The id of the organisation within the MDR, if it can be identified from the affiliation string."
+              },
+              "affiliation_org_name": {
+                "type": "string",
+                "description": "The name of the organisation to which the person is affiliated, as deduced from the affiliation string."
+              },
+              "affiliation_org_ror_id": {
+                "type": "string",
+                "description": "The id of the organisation to which the person is affiliated, if knowm, within the ROR (Research Organisation Registry) system. This is a URL linking to the ROR resource."
               }
             }
           }
         }
       }
     },
-
     "object_topics": {
       "type": "array",
       "items": {
         "type": "object",
         "description": "A composite object that indicates the topic name or keyword, and - where available - the MESH coding for that term",
-        "required": ["id", "value"],
+        "required": [
+          "id",
+          "value"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -523,19 +542,19 @@
             "type": "boolean",
             "description": "Whether or not the topic has been MESH coded"
           },
-          "topic_code": {
+          "mesh_code": {
             "type": "string",
             "description": "The MESH code for the topic if one exists"
           },
-          "topic_value": {
+          "mesh_value": {
             "type": "string",
             "description": "The topic or keyword value or name, as a MESH code if coded, otherwise as provided in the source data"
           },
-          "topic_qualcode": {
+          "mesh_qualcode": {
             "type": "string",
             "description": "Any MESH qualifier code, if one has been applied"
           },
-          "topic_qualvalue": {
+          "mesh_qualvalue": {
             "type": "string",
             "description": "Any MESH qualifier term, if one has been applied"
           },
@@ -546,13 +565,16 @@
         }
       }
     },
-
     "object_identifiers": {
       "type": "array",
       "items": {
         "type": "object",
         "description": "A composite object that indicates the value and type of the identifier, and optionally its date and organisation of origin",
-        "required": ["id", "value", "type"],
+        "required": [
+          "id",
+          "value",
+          "type"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -587,6 +609,10 @@
               "name": {
                 "type": "string",
                 "description": "The default name of the organisation within the ECRIN context database, if it exists, or the name of the organisation as supplied by the source data"
+              },
+              "ror_id": {
+                "type": "string",
+                "description": "The id of the organisation, if knowm, within the ROR (Research Organisation Registry) system. This is a URL linking to the ROR resource."
               }
             }
           },
@@ -597,13 +623,16 @@
         }
       }
     },
-
     "object_descriptions": {
       "type": "array",
       "items": {
         "type": "object",
         "description": "A composite object that indicates the description and its type",
-        "required": ["id", "description_type", "description_text"],
+        "required": [
+          "id",
+          "description_type",
+          "description_text"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -634,21 +663,19 @@
           "lang_code": {
             "type": "string",
             "description": "A two letter ISO 369-1 code indicating the language of the description."
-          },
-          "contains_html": {
-            "type": "boolean",
-            "description": "Whether the title text has any embedded html tags"
           }
         }
       }
     },
-
     "object_rights": {
       "type": "array",
       "items": {
         "type": "object",
         "description": "A composite object that indicates any usage and copyright rights associated with the data object",
-        "required": ["id", "details"],
+        "required": [
+          "id",
+          "details"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -670,13 +697,16 @@
         }
       }
     },
-
     "object_relationships": {
       "type": "array",
       "items": {
         "type": "object",
         "description": "A composite object that indicates any related data object and the nature of the relationship",
-        "required": ["id", "relationship_type", "target_object_id"],
+        "required": [
+          "id",
+          "relationship_type",
+          "target_object_id"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -703,7 +733,6 @@
         }
       }
     },
-
     "linked_studies": {
       "type": "array",
       "items": {
@@ -711,7 +740,6 @@
         "description": "The id, i.e. internal accession number, of a linked study"
       }
     },
-
     "provenance_string": {
       "type": "string",
       "description": "A listing of the source or sources from which the data for the data object has been drawn, and the date-time(s) when the data was last downloaded"

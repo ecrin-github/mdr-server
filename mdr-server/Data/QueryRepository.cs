@@ -130,7 +130,7 @@ namespace mdr_server.Data
                     Path = Infer.Field<Study>(p => p.StudyTopics),
                     Query = new SimpleQueryStringQuery()
                     {
-                        Fields = Infer.Field<Study>(f => f.StudyTopics.First().TopicValue),
+                        Fields = Infer.Field<Study>(f => f.StudyTopics.First().MeshValue),
                         Query = studyCharacteristicsRequest.TopicsInclude,
                         DefaultOperator = Operator.And
                     }

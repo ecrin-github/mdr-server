@@ -8,6 +8,9 @@ namespace mdr_server.Entities.Object
         [Number(Name = "id")]
         public int? Id { get; set; }
         
+        [Text(Name = "file_type")]
+        public string FileType { get; set; }
+        
         [Text(Name = "doi")]
         public string Doi { get; set; }
         
@@ -17,23 +20,27 @@ namespace mdr_server.Entities.Object
         [Text(Name = "version")]
         public string Version { get; set; }
         
-        [Text(Name = "object_class")]
-        public string ObjectClass { get; set; }
+        [Object]
+        [PropertyName("object_class")]
+        public ObjectClass ObjectClass { get; set; }
         
-        [Text(Name = "object_type")]
-        public string ObjectType { get; set; }
+        [Object]
+        [PropertyName("object_type")]
+        public ObjectType ObjectType { get; set; }
         
         [Date(Name = "publication_year", Format = "YYYY")]
-        public int? PublicationYear { get; set; }
+        public int PublicationYear { get; set; }
         
         [Text(Name = "lang_code")]
         public string LangCode { get; set; }
         
-        [Text(Name = "managing_organisation")]
-        public string ManagingOrganisation { get; set; }
+        [Object]
+        [PropertyName("managing_organisation")]
+        public ManagingOrg ManagingOrganisation { get; set; }
         
-        [Text(Name = "access_type")]
-        public string AccessType { get; set; }
+        [Object]
+        [PropertyName("access_type")]
+        public AccessType AccessType { get; set; }
         
         [Object]
         [PropertyName("access_details")]
@@ -53,9 +60,6 @@ namespace mdr_server.Entities.Object
         [Object]
         [PropertyName("dataset_consent")]
         public DatasetConsent DatasetConsent { get; set; }
-        
-        [Text(Name = "object_url")]
-        public string ObjectUrl { get; set; }
         
         [Nested]
         [PropertyName("object_instances")]

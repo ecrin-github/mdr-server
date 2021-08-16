@@ -16,7 +16,18 @@ namespace mdr_server.Entities.Object
         [Text(Name = "orcid")]
         public string Orcid { get; set; }
         
-        [Text(Name = "affiliation")]
-        public string Affiliation { get; set; }
+        [Text(Name = "affiliation_string")]
+        public string AffiliationString { get; set; }
+        
+        [Number(Name = "affiliation_org_id")]
+        public int AffiliationOrgId { get; set; }
+        
+        [Text(Name = "affiliation_org_name")]
+        public string AffiliationOrgName { get; set; }
+        
+        [Text(Name = "affiliation_org_ror_id")]
+        public string AffiliationOrgRorId { get; set; }
+        
+        
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Nest;
 
@@ -8,7 +7,10 @@ namespace mdr_server.Entities.Study
     public class Study
     {
         [Number(Name = "id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
+        
+        [Text(Name = "file_type")]
+        public string FileType { get; set; }
         
         [Text(Name = "display_title")]
         public string DisplayTitle { get; set; }
@@ -19,17 +21,20 @@ namespace mdr_server.Entities.Study
         [Text(Name = "data_sharing_statement")]
         public string DataSharingStatement { get; set; }
         
-        [Text(Name = "study_type")]
-        public string StudyType { get; set; }
+        [Object]
+        [PropertyName("study_type")]
+        public StudyType StudyType { get; set; }
         
-        [Text(Name = "study_status")]
-        public string StudyStatus { get; set; }
+        [Object]
+        [PropertyName("study_status")]
+        public StudyStatus StudyStatus { get; set; }
         
-        [Text(Name = "study_gender_elig")]
-        public string StudyGenderElig { get; set; }
+        [Object]
+        [PropertyName("study_gender_elig")]
+        public StudyGenderElig StudyGenderElig { get; set; }
         
         [Text(Name = "study_enrolment")]
-        public int? StudyEnrolment { get; set; }
+        public string StudyEnrolment { get; set; }
         
         [Object]
         [PropertyName("min_age")]

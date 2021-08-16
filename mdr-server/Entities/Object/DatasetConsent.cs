@@ -4,6 +4,9 @@ namespace mdr_server.Entities.Object
 {
     public class DatasetConsent
     {
+        [Number(Name = "consent_type_id")]
+        public int ConsentTypeId { get; set; }
+        
         [Text(Name = "consent_type")]
         public string ConsentType { get; set; }
         

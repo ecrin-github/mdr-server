@@ -1,3 +1,4 @@
+using mdr_server.Entities.Common;
 using Nest;
 
 namespace mdr_server.Entities.Study
@@ -5,10 +6,11 @@ namespace mdr_server.Entities.Study
     public class StudyTitle
     {
         [Number(Name = "id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
         
-        [Text(Name = "title_type")]
-        public string TitleType { get; set; }
+        [Object]
+        [PropertyName("title_type")]
+        public TitleType TitleType { get; set; }
         
         [Text(Name = "title_text")]
         public string TitleText { get; set; }

@@ -13,16 +13,11 @@
           ],
           "filter": [
             "lowercase",
-            "ecrin_synonyms",
             "default_stop"
           ]
         }
       },
       "filter" : {
-        "ecrin_synonyms" : {
-          "type" : "synonym",
-          "synonyms_path" : "synonyms/all_synonyms.txt"
-        },
         "default_stop": {
           "type": "stop",
           "stopwords":  "_english_"
@@ -56,29 +51,45 @@
       "id":{
         "type":"integer"
       },
+      "file_type":{
+        "type":"text",
+        "fielddata": true
+      },
       "doi":{
         "type":"keyword",
-        "eager_global_ordinals": true,
-        "copy_to": "text_container"
+        "eager_global_ordinals": true
       },
       "display_title":{
         "type":"text",
-        "fielddata": true,
-        "analyzer":"standard",
-        "copy_to": "text_container"
+        "fielddata": true
       },
       "version":{
         "type":"text",
-        "fielddata": true,
-        "copy_to": "text_container"
+        "fielddata": true
       },
       "object_class":{
-        "type":"keyword",
-        "copy_to": "text_container"
+        "type":"object",
+        "properties":{
+          "id":{
+            "type":"integer"
+          },
+          "name":{
+            "type":"text",
+            "fielddata": true
+          }
+        }
       },
       "object_type":{
-        "type":"keyword",
-        "copy_to": "text_container"
+        "type":"object",
+        "properties":{
+          "id":{
+            "type":"integer"
+          },
+          "name":{
+            "type":"text",
+            "fielddata": true
+          }
+        }
       },
       "publication_year":{
         "type":"date",
@@ -89,22 +100,39 @@
         "eager_global_ordinals": true
       },
       "managing_organisation":{
-        "type":"text",
-        "fielddata": true,
-        "copy_to": "text_container"
+        "type":"object",
+        "properties":{
+          "id":{
+            "type":"integer"
+          },
+          "name":{
+            "type":"text",
+            "fielddata": true
+          },
+          "ror_id":{
+            "type":"text",
+            "fielddata": true
+          }
+        }
       },
-      "access_type": {
-        "type":"keyword",
-        "copy_to": "text_container"
+      "access_type":{
+        "type":"object",
+        "properties":{
+          "id":{
+            "type":"integer"
+          },
+          "name":{
+            "type":"text",
+            "fielddata": true
+          }
+        }
       },
       "access_details":{
         "type":"object",
         "properties": {
           "description": {
             "type": "text",
-            "analyzer":"standard",
-            "fielddata": true,
-            "copy_to": "text_container"
+            "fielddata": true
           },
           "url": {
             "type": "text",
@@ -112,7 +140,7 @@
           },
           "url_last_checked": {
             "type":"date",
-            "format":"YYYY MM DD"
+            "format":"yyyy MM dd"
           }
         }
       },
@@ -122,23 +150,28 @@
       "dataset_record_keys": {
         "type":"object",
         "properties": {
+          "keys_type_id":{
+            "type":"integer"
+          },
           "keys_type":{
-            "type":"keyword",
-            "copy_to": "text_container"
+            "type":"text",
+            "fielddata": true
           },
           "keys_details":{
             "type":"text",
-            "analyzer": "standard",
-            "copy_to": "text_container"
+            "fielddata": true
           }
         }
       },
       "dataset_deident_level": {
         "type":"object",
         "properties": {
+          "deident_type_id": {
+            "type":"integer"
+          },
           "deident_type": {
-            "type":"keyword",
-            "copy_to": "text_container"
+            "type":"text",
+            "fielddata": true
           },
           "deident_direct": {
             "type": "boolean"
@@ -157,17 +190,19 @@
           },
           "deident_details":{
             "type":"text",
-            "analyzer": "standard",
-            "copy_to": "text_container"
+            "fielddata": true
           }
         }
       },
       "dataset_consent":{
         "type":"object",
         "properties":{
+          "consent_type_id": {
+            "type":"integer"
+          },
           "consent_type": {
-            "type":"keyword",
-            "copy_to": "text_container"
+            "type":"text",
+            "fielddata": true
           },
           "consent_noncommercial": {
             "type": "boolean"
@@ -186,14 +221,9 @@
           },
           "consents_details": {
             "type":"text",
-            "analyzer": "standard",
-            "copy_to": "text_container"
+            "fielddata": true
           }
         }
-      },
-      "object_url": {
-        "type": "text",
-        "fielddata": true
       },
       "object_instances":{
         "type":"nested",
@@ -202,9 +232,16 @@
             "type":"integer"
           },
           "repository_org":{
-            "type":"text",
-            "fielddata": true,
-            "copy_to": "text_container"
+            "type":"object",
+            "properties":{
+              "id":{
+                "type":"integer"
+              },
+              "name":{
+                "type":"text",
+                "fielddata": true
+              }
+            }
           },
           "access_details": {
             "type": "object",
@@ -218,24 +255,30 @@
               },
               "url_last_checked":{
                 "type":"date",
-                "format":"YYYY MMM dd"
+                "format":"yyyy MMM dd"
               }
             }
           },
           "resource_details": {
             "type": "object",
             "properties": {
+              "type_id": {
+                "type": "integer"
+              },
               "type_name": {
-                "type": "keyword"
+                "type": "text",
+                "fielddata": true
               },
               "size": {
                 "type": "float"
               },
               "size_unit": {
-                "type": "keyword"
+                "type": "text",
+                "fielddata": true
               },
               "comments": {
-                "type": "text"
+                "type": "text",
+                "fielddata": true
               }
             }
           }
@@ -248,21 +291,28 @@
             "type":"integer"
           },
           "title_type":{
-            "type":"keyword",
-            "copy_to": "text_container"
+            "type":"object",
+            "properties":{
+              "id":{
+                "type":"integer"
+              },
+              "name":{
+                "type":"text",
+                "fielddata": true
+              }
+            }
           },
           "title_text":{
             "type":"text",
-            "fielddata": true,
-            "analyzer":"standard",
-            "copy_to": "text_container"
+            "fielddata": true
           },
           "lang_code":{
             "type":"keyword",
             "eager_global_ordinals": true
           },
           "comments":{
-            "type":"text"
+            "type":"text",
+            "fielddata": true
           }
         }
       },
@@ -270,30 +320,37 @@
         "type":"nested",
         "properties":{
           "id":{
-            "type": "integer"
+            "type":"integer"
           },
           "date_type":{
-            "type": "keyword",
-            "copy_to": "text_container"
+            "type":"object",
+            "properties":{
+              "id":{
+                "type":"integer"
+              },
+              "name":{
+                "type":"text",
+                "fielddata": true
+              }
+            }
           },
-          "is_date_range":{
-            "type": "boolean"
+          "date_is_range":{
+            "type":"boolean"
           },
           "date_as_string":{
-            "type": "text",
-            "fielddata": true,
-            "copy_to": "text_container"
+            "type":"text",
+            "fielddata": true
           },
           "start_date":{
             "type":"object",
             "properties":{
-              "year":{
+              "start_year":{
                 "type":"integer"
               },
-              "month":{
+              "start_month":{
                 "type":"integer"
               },
-              "day":{
+              "start_day":{
                 "type":"integer"
               }
             }
@@ -301,19 +358,20 @@
           "end_date":{
             "type":"object",
             "properties":{
-              "year":{
+              "end_year":{
                 "type":"integer"
               },
-              "month":{
+              "end_month":{
                 "type":"integer"
               },
-              "day":{
+              "end_day":{
                 "type":"integer"
               }
             }
           },
           "comments":{
-            "type":"text"
+            "type":"text",
+            "fielddata": true
           }
         }
       },
@@ -324,43 +382,69 @@
             "type":"integer"
           },
           "contribution_type":{
-            "type":"keyword",
-            "copy_to": "text_container"
+            "type":"object",
+            "properties":{
+              "id":{
+                "type":"integer"
+              },
+              "name":{
+                "type":"text",
+                "fielddata": true
+              }
+            }
           },
           "is_individual":{
             "type":"boolean"
           },
           "organisation":{
-            "type":"text",
-            "fielddata": true,
-            "copy_to": "text_container"
+            "type":"object",
+            "properties":{
+              "id":{
+                "type":"integer"
+              },
+              "name":{
+                "type":"text",
+                "fielddata": true
+              },
+              "ror_id":{
+                "type":"text",
+                "fielddata": true
+              }
+            }
           },
           "person":{
             "type":"object",
             "properties":{
               "family_name":{
                 "type":"text",
-                "fielddata": true,
-                "copy_to": "text_container"
+                "fielddata": true
               },
               "given_name":{
                 "type":"text",
-                "fielddata": true,
-                "copy_to": "text_container"
+                "fielddata": true
               },
               "full_name":{
                 "type":"text",
-                "fielddata": true,
-                "copy_to": "text_container"
+                "fielddata": true
               },
               "orcid": {
-                "type": "keyword",
-                "copy_to": "text_container"
+                "type": "text",
+                "fielddata": true
               },
-              "affiliation": {
-                "type":"text",
-                "fielddata": true,
-                "copy_to": "text_container"
+              "affiliation_string": {
+                "type": "text",
+                "fielddata": true
+              },
+              "affiliation_org_id": {
+                "type": "integer"
+              },
+              "affiliation_org_name": {
+                "type": "text",
+                "fielddata": true
+              },
+              "affiliation_org_ror_id": {
+                "type": "text",
+                "fielddata": true
               }
             }
           }
@@ -373,38 +457,39 @@
             "type":"integer"
           },
           "topic_type": {
-            "type": "keyword",
-            "copy_to": "text_container"
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "text",
+                "fielddata": true
+              }
+            }
           },
           "mesh_coded": {
             "type": "boolean"
           },
-          "topic_code": {
+          "mesh_code": {
             "type": "text",
-            "fielddata": true,
-            "copy_to": "text_container"
+            "fielddata": true
           },
-          "topic_value":{
+          "mesh_value":{
             "type":"text",
-            "fielddata": true,
-            "analyzer":"standard",
-            "copy_to": "text_container"
+            "fielddata": true
           },
-          "topic_qualcode": {
+          "mesh_qualcode": {
             "type": "text",
-            "fielddata": true,
-            "copy_to": "text_container"
+            "fielddata": true
           },
-          "topic_qualvalue": {
+          "mesh_qualvalue": {
             "type": "text",
-            "fielddata": true,
-            "copy_to": "text_container"
+            "fielddata": true
           },
           "original_value": {
             "type": "text",
-            "fielddata": true,
-            "analyzer":"standard",
-            "copy_to": "text_container"
+            "fielddata": true
           }
         }
       },
@@ -416,21 +501,39 @@
           },
           "identifier_value":{
             "type":"text",
-            "fielddata": true,
-            "analyzer":"standard",
-            "copy_to": "text_container"
+            "fielddata": true
           },
           "identifier_type":{
-            "type":"keyword",
-            "copy_to": "text_container"
+            "type":"object",
+            "properties":{
+              "id":{
+                "type":"integer"
+              },
+              "name":{
+                "type":"text",
+                "fielddata": true
+              }
+            }
           },
           "identifier_date":{
             "type":"date",
-            "format":"YYYY MMM dd"
+            "format":"yyyy MMM dd"
           },
           "identifier_org":{
-            "type":"text",
-            "copy_to": "text_container"
+            "type":"object",
+            "properties":{
+              "id":{
+                "type":"integer"
+              },
+              "name":{
+                "type":"text",
+                "fielddata": true
+              },
+              "ror_id":{
+                "type":"text",
+                "fielddata": true
+              }
+            }
           }
         }
       },
@@ -441,8 +544,16 @@
             "type":"integer"
           },
           "description_type":{
-            "type":"keyword",
-            "copy_to": "text_container"
+            "type":"object",
+            "properties":{
+              "id":{
+                "type":"integer"
+              },
+              "name":{
+                "type":"text",
+                "fielddata": true
+              }
+            }
           },
           "description_label":{
             "type":"text",
@@ -450,9 +561,7 @@
           },
           "description_text":{
             "type":"text",
-            "fielddata": true,
-            "analyzer":"standard",
-            "copy_to": "text_container"
+            "fielddata": true
           },
           "lang_code":{
             "type":"keyword",
@@ -467,15 +576,16 @@
             "type":"integer"
           },
           "rights_name":{
-            "type":"keyword",
-            "copy_to": "text_container"
-          },
-          "rights_url":{
             "type":"text",
             "fielddata": true
           },
+          "rights_url":{
+            "type":"keyword",
+            "fielddata": true
+          },
           "comments": {
-            "type": "text"
+            "type": "text",
+            "fielddata": true
           }
         }
       },
@@ -486,8 +596,16 @@
             "type": "integer"
           },
           "relationship_type": {
-            "type": "keyword",
-            "copy_to": "text_container"
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "text",
+                "fielddata": true
+              }
+            }
           },
           "target_object_id": {
             "type": "integer"
@@ -499,12 +617,6 @@
       },
       "provenance_string": {
         "type": "text",
-        "fielddata": true,
-        "copy_to": "text_container"
-      },
-      "text_container": {
-        "type": "text",
-        "analyzer": "standard",
         "fielddata": true
       }
     }

@@ -1,3 +1,4 @@
+using mdr_server.Entities.Common;
 using Nest;
 
 namespace mdr_server.Entities.Object
@@ -7,10 +8,11 @@ namespace mdr_server.Entities.Object
         [Number(Name = "id")]
         public int? Id { get; set; }
         
-        [Text(Name = "relationship_type")]
-        public string RelationshipType { get; set; }
+        [Object]
+        [PropertyName("relationship_type")]
+        public RelationType RelationshipType { get; set; }
         
         [Number(Name = "target_object_id")]
-        public int? TargetObjectId { get; set; }
+        public int TargetObjectId { get; set; }
     }
 }
