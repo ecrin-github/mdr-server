@@ -20,13 +20,7 @@ namespace mdr_server.Entities.Study
         
         [Text(Name = "mesh_value")]
         public string MeshValue { get; set; }
-        
-        [Text(Name = "mesh_qualcode")]
-        public string MeshQualCode { get; set; }
-        
-        [Text(Name = "mesh_qualvalue")]
-        public string MeshQualValue { get; set; }
-        
+
         [Text(Name = "original_value")]
         public string OriginalValue { get; set; }
     }

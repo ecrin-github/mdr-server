@@ -6,7 +6,7 @@ namespace mdr_server.Entities.Object
     public class ObjectRelationship
     {
         [Number(Name = "id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
         
         [Object]
         [PropertyName("relationship_type")]
