@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -431,7 +430,6 @@ namespace mdr_server.Helpers
             foreach (var study in fetchedStudies.Studies)
             {
                 FetchedObjects fetchedObjects = await _fetchedDataRepository.GetFetchedObjects(study.LinkedDataObjects, filtersListRequest);
-                // Console.WriteLine(fetchedObjects.Total);
                 
                 MinAgeResponse minAgeResponse = null;
                 if (study.MinAge != null)
@@ -556,61 +554,79 @@ namespace mdr_server.Helpers
             
             return studiesDto;
         }
-        
-        
+
+
+        public async Task<List<StudyListResponse>> MapViaPublishedPaper(List<Object> objects)
+        {
+            List<StudyListResponse> studies = new List<StudyListResponse>();
+            foreach (var obj in objects)
+            {
+                if (obj.LinkedStudies != null && obj.LinkedStudies.Length > 0)
+                {
+                    FetchedStudies fetchedStudies = await _fetchedDataRepository.GetObjectStudies(obj.LinkedStudies);
+
+                    if (fetchedStudies.Total > 0)
+                    {
+                        List<StudyListResponse> mappedStudies = await MapRawStudies(fetchedStudies.Studies);
+                        foreach (var study in mappedStudies)
+                        {
+                            studies.Add(study);
+                        }
+                    }
+                }
+            }
+            return studies;
+        }
+
+
         public async Task<List<StudyListResponse>> MapRawStudies(List<Study> studies)
         {
             List<StudyListResponse> studiesDto = new List<StudyListResponse>();
-            FiltersListRequest filtersListRequest = new FiltersListRequest();
             foreach (var study in studies)
             {
-                FetchedObjects fetchedObjects = await _fetchedDataRepository.GetFetchedObjects(study.LinkedDataObjects, filtersListRequest);
-
-                if (fetchedObjects.Total > 0)
-                {
-                    MinAgeResponse minAgeResponse = null;
-                    if (study.MinAge != null)
-                    {
-                        minAgeResponse = new MinAgeResponse
-                        {
-                            Value = study.MinAge.Value,
-                            UnitName = study.MinAge.UnitName
-                        };
-                    }
-
-                    MaxAgeResponse maxAgeResponse = null;
-                    if (study.MaxAge != null)
-                    {
-                        maxAgeResponse = new MaxAgeResponse
-                        {
-                            Value = study.MaxAge.Value,
-                            UnitName = study.MaxAge.UnitName
-                        };
-                    }
+                FetchedObjects fetchedObjects = await _fetchedDataRepository.GetStudyObjects(study.LinkedDataObjects);
                 
-                    var studyDto = new StudyListResponse
+                MinAgeResponse minAgeResponse = null;
+                if (study.MinAge != null)
+                {
+                    minAgeResponse = new MinAgeResponse
                     {
-                        Id = study.Id!,
-                        DisplayTitle = study.DisplayTitle,
-                        BriefDescription = study.BriefDescription,
-                        StudyType = study.StudyType.Name,
-                        StudyStatus = study.StudyStatus.Name,
-                        StudyGenderElig = study.StudyGenderElig.Name,
-                        StudyEnrolment = study.StudyEnrolment,
-                        MinAge = minAgeResponse,
-                        MaxAge = maxAgeResponse,
-                        StudyIdentifiers = StudyIdentifierListResponseMapper(study.StudyIdentifiers),
-                        StudyTitles = StudyTitleListResponseMapper(study.StudyTitles),
-                        StudyFeatures = StudyFeatureListResponseMapper(study.StudyFeatures),
-                        StudyTopics = StudyTopicResponseMapper(study.StudyTopics),
-                        StudyRelationships = StudyRelationListResponseMapper(study.StudyRelationships),
-                        ProvenanceString = study.ProvenanceString!,
-                        LinkedDataObjects = ObjectListResponseMapper(fetchedObjects.Objects),
+                        Value = study.MinAge.Value,
+                        UnitName = study.MinAge.UnitName
                     };
-                    studiesDto.Add(studyDto);
                 }
-            }
 
+                MaxAgeResponse maxAgeResponse = null;
+                if (study.MaxAge != null)
+                {
+                    maxAgeResponse = new MaxAgeResponse
+                    {
+                        Value = study.MaxAge.Value,
+                        UnitName = study.MaxAge.UnitName
+                    };
+                }
+            
+                var studyDto = new StudyListResponse
+                {
+                    Id = study.Id!,
+                    DisplayTitle = study.DisplayTitle,
+                    BriefDescription = study.BriefDescription,
+                    StudyType = study.StudyType.Name,
+                    StudyStatus = study.StudyStatus.Name,
+                    StudyGenderElig = study.StudyGenderElig.Name,
+                    StudyEnrolment = study.StudyEnrolment,
+                    MinAge = minAgeResponse,
+                    MaxAge = maxAgeResponse,
+                    StudyIdentifiers = StudyIdentifierListResponseMapper(study.StudyIdentifiers),
+                    StudyTitles = StudyTitleListResponseMapper(study.StudyTitles),
+                    StudyFeatures = StudyFeatureListResponseMapper(study.StudyFeatures),
+                    StudyTopics = StudyTopicResponseMapper(study.StudyTopics),
+                    StudyRelationships = StudyRelationListResponseMapper(study.StudyRelationships),
+                    ProvenanceString = study.ProvenanceString!,
+                    LinkedDataObjects = ObjectListResponseMapper(fetchedObjects.Objects),
+                };
+                studiesDto.Add(studyDto);
+            }
             return studiesDto;
         }
         
@@ -619,16 +635,15 @@ namespace mdr_server.Helpers
         {
             if (objects.Count <= 0) return null;
             List<StudyListResponse> studies = new List<StudyListResponse>();
-            FiltersListRequest filtersListRequest = new FiltersListRequest();
             foreach (var obj in objects)
             {
                 if (obj.LinkedStudies != null && obj.LinkedStudies.Length > 0)
                 {
-                    FetchedStudies fetchedStudies = await _fetchedDataRepository.GetFetchedStudies(obj.LinkedStudies, filtersListRequest);
+                    FetchedStudies fetchedStudies = await _fetchedDataRepository.GetObjectStudies(obj.LinkedStudies);
 
                     if (fetchedStudies.Total > 0)
                     {
-                        List<StudyListResponse> mappedStudies = await MapStudies(fetchedStudies, filtersListRequest);
+                        List<StudyListResponse> mappedStudies = await MapRawStudies(fetchedStudies.Studies);
                         foreach (var study in mappedStudies)
                         {
                             studies.Add(study);

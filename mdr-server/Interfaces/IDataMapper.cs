@@ -16,7 +16,8 @@ namespace mdr_server.Interfaces
         
         Task<List<StudyListResponse>> MapRawObjects(List<Object> objects);
 
-        
+        Task<List<StudyListResponse>> MapViaPublishedPaper(List<Object> objects);
+
         Task<List<StudyListResponse>> MapStudies(FetchedStudies fetchedStudies, FiltersListRequest filtersListRequest);
         Task<List<StudyListResponse>> MapObjects(FetchedObjects fetchedObjects, FiltersListRequest filtersListRequest);
     }

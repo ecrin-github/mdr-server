@@ -66,7 +66,7 @@ namespace mdr_server.Data
             FiltersListRequest filtersListRequest = null;
 
             List<QueryContainer> mustNot = null;
-            if (HasProperty(specificStudyRequest, "Filters"))
+            if (HasProperty(specificStudyRequest, "Filters") && specificStudyRequest.Filters != null)
             {
                 filtersListRequest = specificStudyRequest.Filters;
                 if (HasProperty(specificStudyRequest.Filters, "StudyFilters"))
@@ -132,11 +132,11 @@ namespace mdr_server.Data
         public async Task<BaseResponse> GetByStudyCharacteristics(StudyCharacteristicsRequest studyCharacteristicsRequest)
         {
             var startFrom = CalculateStartFrom(studyCharacteristicsRequest.Page, studyCharacteristicsRequest.Size);
-
+            
             FiltersListRequest filtersListRequest = null;
             
             List<QueryContainer> mustNot = null;
-            if (HasProperty(studyCharacteristicsRequest, "Filters"))
+            if (HasProperty(studyCharacteristicsRequest, "Filters") && studyCharacteristicsRequest.Filters != null)
             {
                 filtersListRequest = studyCharacteristicsRequest.Filters;
                 if (HasProperty(studyCharacteristicsRequest.Filters, "StudyFilters"))
@@ -148,7 +148,7 @@ namespace mdr_server.Data
                     }
                 }
             }
-            
+
             var shouldClause = new List<QueryContainer>();
             shouldClause.Add(new SimpleQueryStringQuery()
             {
@@ -266,7 +266,7 @@ namespace mdr_server.Data
             FiltersListRequest filtersListRequest = null;
             
             List<QueryContainer> mustNot = null;
-            if (HasProperty(viaPublishedPaperRequest, "Filters"))
+            if (HasProperty(viaPublishedPaperRequest, "Filters") && viaPublishedPaperRequest.Filters != null)
             {
                 filtersListRequest = viaPublishedPaperRequest.Filters;
                 if (HasProperty(viaPublishedPaperRequest.Filters, "ObjectFilters"))
@@ -351,12 +351,21 @@ namespace mdr_server.Data
             
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Object>(searchRequest);
-                FetchedObjects fetchedObjects = new FetchedObjects()
+                
+                /*FetchedObjects fetchedObjects = new FetchedObjects()
                 {
                     Total = results.Total,
                     Objects = results.Documents.ToList()
                 };
                 var studies = await _dataMapper.MapObjects(fetchedObjects, filtersListRequest);
+
+                return new BaseResponse()
+                {
+                    Total = results.Total,
+                    Data = studies
+                };*/
+
+                var studies = await _dataMapper.MapViaPublishedPaper(results.Documents.ToList());
 
                 return new BaseResponse()
                 {

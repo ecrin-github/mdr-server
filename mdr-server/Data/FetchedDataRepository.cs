@@ -30,12 +30,15 @@ namespace mdr_server.Data
         {
 
             List<QueryContainer> mustNot = null;
-            if (HasProperty(filtersListRequest, "ObjectFilters"))
+            if (filtersListRequest != null)
             {
-                mustNot = new List<QueryContainer>();
-                foreach (var param in filtersListRequest.ObjectFilters)
+                if (HasProperty(filtersListRequest, "ObjectFilters"))
                 {
-                    mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                    mustNot = new List<QueryContainer>();
+                    foreach (var param in filtersListRequest.ObjectFilters)
+                    {
+                        mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                    }
                 }
             }
 
@@ -82,12 +85,15 @@ namespace mdr_server.Data
         public async Task<FetchedStudies> GetFetchedStudies(int[] ids, FiltersListRequest filtersListRequest)
         {
             List<QueryContainer> mustNot = null;
-            if (HasProperty(filtersListRequest, "StudyFilters"))
+            if (filtersListRequest != null)
             {
-                mustNot = new List<QueryContainer>();
-                foreach (var param in filtersListRequest.StudyFilters)
+                if (HasProperty(filtersListRequest, "StudyFilters"))
                 {
-                    mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                    mustNot = new List<QueryContainer>();
+                    foreach (var param in filtersListRequest.StudyFilters)
+                    {
+                        mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                    }
                 }
             }
             
@@ -119,7 +125,7 @@ namespace mdr_server.Data
 
             SearchRequest<Study> searchRequest = new SearchRequest<Study>(Indices.Index("study"))
             {
-                Query = boolQuery
+                Query = boolQuery,
             };
             
             var result = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);
@@ -153,6 +159,30 @@ namespace mdr_server.Data
                 Objects = result.Documents.ToList()
             };
             return fetchedObjects;
+        }
+        
+        
+        public async Task<FetchedStudies> GetObjectStudies(int[] ids)
+        {
+            var result = await _elasticSearchService.GetConnection().SearchAsync<Study>(s => s
+                .Index("study")
+                .Query(q => q
+                    .Bool(b => b
+                        .Filter(f => f
+                            .Terms(t => t
+                                .Field(p => p.Id)
+                                .Terms(ids)
+                            )
+                        )
+                    )
+                )
+            );
+            FetchedStudies fetchedStudies = new FetchedStudies()
+            {
+                Total = result.Total,
+                Studies = result.Documents.ToList()
+            };
+            return fetchedStudies;
         }
     }
 }
