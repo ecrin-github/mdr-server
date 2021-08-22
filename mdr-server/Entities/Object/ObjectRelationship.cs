@@ -6,13 +6,16 @@ namespace mdr_server.Entities.Object
     public class ObjectRelationship
     {
         [Number(Name = "id")]
-        public int Id { get; set; }
+        #nullable enable
+        public int? Id { get; set; }
         
         [Object]
         [PropertyName("relationship_type")]
-        public RelationType RelationshipType { get; set; }
+        #nullable enable
+        public RelationType? RelationshipType { get; set; }
         
         [Number(Name = "target_object_id")]
-        public int TargetObjectId { get; set; }
+        #nullable enable
+        public int? TargetObjectId { get; set; }
     }
 }

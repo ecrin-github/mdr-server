@@ -5,18 +5,23 @@ namespace mdr_server.Entities.Object
     public class InstanceResourceDetails
     {
         [Number(Name = "type_id")]
-        public int TypeId { get; set; }
+        #nullable enable
+        public int? TypeId { get; set; }
         
         [Text(Name = "type_name")]
-        public string TypeName { get; set; }
+        #nullable enable
+        public string? TypeName { get; set; }
         
         [Number(Name = "size")]
+        #nullable enable
         public float? Size { get; set; }
         
         [Text(Name = "size_unit")]
-        public string SizeUnit { get; set; }
+        #nullable enable
+        public string? SizeUnit { get; set; }
         
         [Text(Name = "comments")]
-        public string Comments { get; set; }
+        #nullable enable
+        public string? Comments { get; set; }
     }
 }

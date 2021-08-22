@@ -5,9 +5,11 @@ namespace mdr_server.Entities.Study
     public class StudyStatus
     {
         [Number(Name = "id")]
-        public int Id { get; set; }
+        #nullable enable
+        public int? Id { get; set; }
         
         [Text(Name = "name")]
-        public string Name { get; set; }
+        #nullable enable
+        public string? Name { get; set; }
     }
 }

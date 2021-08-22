@@ -45,20 +45,20 @@ namespace mdr_server.Data
                 {
                     From = startFrom,
                     Size = rawQueryRequest.Size,
-                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.ElasticQuery))
+                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.Query))
                 };
             }
             else
             {
                 searchRequest = new SearchRequest<Study>(Indices.Index("study"))
                 {
-                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.ElasticQuery))
+                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.Query))
                 };
             }
 
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);
-                var studies = await _dataMapper.MapStudies(results.Documents.ToList());
+                var studies = await _dataMapper.MapRawStudies(results.Documents.ToList());
                 return new BaseResponse()
                 {
                     Total = results.Total,
@@ -79,20 +79,20 @@ namespace mdr_server.Data
                 {
                     From = startFrom,
                     Size = rawQueryRequest.Size,
-                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.ElasticQuery))
+                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.Query))
                 };
             }
             else
             {
                 searchRequest = new SearchRequest<Object>(Indices.Index("data-object"))
                 {
-                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.ElasticQuery))
+                    Query = new RawQuery(JsonSerializer.Serialize(rawQueryRequest.Query))
                 };
             }
 
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Object>(searchRequest);
-                var studies = await _dataMapper.MapObjects(results.Documents.ToList());
+                var studies = await _dataMapper.MapRawObjects(results.Documents.ToList());
 
                 return new BaseResponse()
                 {

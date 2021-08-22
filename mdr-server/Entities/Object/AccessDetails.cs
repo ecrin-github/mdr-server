@@ -5,12 +5,15 @@ namespace mdr_server.Entities.Object
     public class AccessDetails
     {
         [Text(Name = "description")]
-        public string Description { get; set; }
+        #nullable enable
+        public string? Description { get; set; }
         
         [Text(Name = "url")]
-        public string Url { get; set; }
+        #nullable enable
+        public string? Url { get; set; }
         
         [Date(Name = "url_last_checked", Format = "YYYY MM DD")]
-        public string UrlLastChecked { get; set; }
+        #nullable enable
+        public string? UrlLastChecked { get; set; }
     }
 }

@@ -5,27 +5,34 @@ namespace mdr_server.Entities.Object
     public class DatasetDeidentLevel
     {
         [Number(Name = "deident_type_id")]
-        public int DeidentTypeId { get; set; }
+        #nullable enable
+        public int? DeidentTypeId { get; set; }
         
         [Text(Name = "deident_type")]
-        public string DeidentType { get; set; }
+        #nullable enable
+        public string? DeidentType { get; set; }
         
         [Boolean(Name = "deident_direct")]
-        public bool DeidentDirect { get; set; }
+        #nullable enable
+        public bool? DeidentDirect { get; set; }
         
         [Boolean(Name = "deident_hipaa")]
-        public bool DeidentHipaa { get; set; }
+        #nullable enable
+        public bool? DeidentHipaa { get; set; }
         
         [Boolean(Name = "deident_dates")]
-        public bool DeidentDates { get; set; }
+        #nullable enable
+        public bool? DeidentDates { get; set; }
         
         [Boolean(Name = "deident_nonarr")]
-        public bool DeidentNonarr { get; set; }
+        #nullable enable
+        public bool? DeidentNonarr { get; set; }
         
         [Boolean(Name = "deident_kanon")]
-        public bool DeidentKanon { get; set; }
+        public bool? DeidentKanon { get; set; }
         
         [Text(Name = "deident_details")]
-        public string DeidentDetails { get; set; }
+        #nullable enable
+        public string? DeidentDetails { get; set; }
     }
 }

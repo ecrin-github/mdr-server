@@ -4,6 +4,6 @@ namespace mdr_server.Contracts.v1.Requests.Query
 {
     public class RawQueryRequest : BaseQueryRequest
     {
-        public IDictionary<string, object> ElasticQuery { get; set; }
+        public IDictionary<string, object> Query { get; set; }
     }
 }

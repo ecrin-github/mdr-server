@@ -6,13 +6,16 @@ namespace mdr_server.Entities.Study
     public class StudyRelation
     {
         [Number(Name = "id")]
-        public int Id { get; set; }
+        #nullable enable
+        public int? Id { get; set; }
         
         [Object]
         [PropertyName("relationship_type")]
-        public RelationType RelationshipType { get; set; }
+        #nullable enable
+        public RelationType? RelationshipType { get; set; }
         
         [Number(Name = "target_study_id")]
-        public int TargetStudyId { get; set; }
+        #nullable enable
+        public int? TargetStudyId { get; set; }
     }
 }

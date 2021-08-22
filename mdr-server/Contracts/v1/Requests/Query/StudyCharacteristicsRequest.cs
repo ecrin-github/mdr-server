@@ -7,6 +7,7 @@ namespace mdr_server.Contracts.v1.Requests.Query
 
         public string LogicalOperator { get; set; } = null!;
 
+        #nullable enable
         public string? TopicsInclude { get; set; }
     }
 }

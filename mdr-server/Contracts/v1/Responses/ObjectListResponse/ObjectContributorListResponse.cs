@@ -4,14 +4,15 @@ namespace mdr_server.Contracts.v1.Responses.ObjectListResponse
 {
     public class ObjectContributorListResponse
     {
-        public int Id { get; set; }
+        #nullable enable
+        public int? Id { get; set; }
         
-        public string ContributionType { get; set; }
+        public string? ContributionType { get; set; }
         
-        public bool IsIndividual { get; set; }
+        public bool? IsIndividual { get; set; }
         
-        public ContribOrg Organisation { get; set; }
+        public ContribOrg? Organisation { get; set; }
         
-        public Person Person { get; set; }
+        public Person? Person { get; set; }
     }
 }

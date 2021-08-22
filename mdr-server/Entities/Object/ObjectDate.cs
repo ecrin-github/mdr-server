@@ -5,27 +5,34 @@ namespace mdr_server.Entities.Object
     public class ObjectDate
     {
         [Number(Name = "id")]
-        public int Id { get; set; }
+        #nullable enable
+        public int? Id { get; set; }
         
         [Object]
         [PropertyName("date_type")]
-        public DateType DateType { get; set; }
+        #nullable enable
+        public DateType? DateType { get; set; }
         
         [Boolean(Name = "date_is_range")]
-        public bool DateIsRange { get; set; }
+        #nullable enable
+        public bool? DateIsRange { get; set; }
         
         [Text(Name = "date_as_string")]
-        public string DateAsString { get; set; }
+        #nullable enable
+        public string? DateAsString { get; set; }
         
         [Object]
         [PropertyName("start_date")]
-        public Date StartDate { get; set; }
+        #nullable enable
+        public Date? StartDate { get; set; }
         
         [Object]
         [PropertyName("end_date")]
-        public Date EndDate { get; set; }
+        #nullable enable
+        public Date? EndDate { get; set; }
         
         [Text(Name = "comments")]
-        public string Comments { get; set; }
+        #nullable enable
+        public string? Comments { get; set; }
     }
 }

@@ -5,12 +5,15 @@ namespace mdr_server.Entities.Object
     public class ManagingOrg
     {
         [Number(Name = "id")]
-        public int Id { get; set; }
+        #nullable enable
+        public int? Id { get; set; }
         
         [Text(Name = "name")]
-        public string Name { get; set; }
+        #nullable enable
+        public string? Name { get; set; }
         
         [Text(Name = "ror_id")]
-        public string RorId { get; set; }
+        #nullable enable
+        public string? RorId { get; set; }
     }
 }

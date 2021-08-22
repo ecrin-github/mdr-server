@@ -6,101 +6,128 @@ namespace mdr_server.Entities.Object
     public class Object
     {
         [Number(Name = "id")]
+        #nullable enable
         public int? Id { get; set; }
         
         [Text(Name = "file_type")]
-        public string FileType { get; set; }
+        #nullable enable
+        public string? FileType { get; set; }
         
         [Text(Name = "doi")]
-        public string Doi { get; set; }
+        #nullable enable
+        public string? Doi { get; set; }
         
         [Text(Name = "display_title")]
-        public string DisplayTitle { get; set; }
+        #nullable enable
+        public string? DisplayTitle { get; set; }
         
         [Text(Name = "version")]
-        public string Version { get; set; }
+        #nullable enable
+        public string? Version { get; set; }
         
         [Object]
         [PropertyName("object_class")]
-        public ObjectClass ObjectClass { get; set; }
+        #nullable enable
+        public ObjectClass? ObjectClass { get; set; }
         
         [Object]
         [PropertyName("object_type")]
-        public ObjectType ObjectType { get; set; }
+        #nullable enable
+        public ObjectType? ObjectType { get; set; }
         
         [Date(Name = "publication_year", Format = "YYYY")]
-        public int PublicationYear { get; set; }
+        #nullable enable
+        public int? PublicationYear { get; set; }
         
         [Text(Name = "lang_code")]
-        public string LangCode { get; set; }
+        #nullable enable
+        public string? LangCode { get; set; }
         
         [Object]
         [PropertyName("managing_organisation")]
-        public ManagingOrg ManagingOrganisation { get; set; }
+        #nullable enable
+        public ManagingOrg? ManagingOrganisation { get; set; }
         
         [Object]
         [PropertyName("access_type")]
-        public AccessType AccessType { get; set; }
+        #nullable enable
+        public AccessType? AccessType { get; set; }
         
         [Object]
         [PropertyName("access_details")]
-        public AccessDetails AccessDetails { get; set; }
+        #nullable enable
+        public AccessDetails? AccessDetails { get; set; }
         
         [Number(Name = "eosc_category")]
+        #nullable enable
         public int? EoscCategory { get; set; } 
         
         [Object]
         [PropertyName("dataset_record_keys")]
-        public DatasetRecordKeys DatasetRecordKeys { get; set; }
+        #nullable enable
+        public DatasetRecordKeys? DatasetRecordKeys { get; set; }
         
         [Object]
         [PropertyName("dataset_deident_level")]
-        public DatasetDeidentLevel DatasetDeidentLevel { get; set; }
+        #nullable enable
+        public DatasetDeidentLevel? DatasetDeidentLevel { get; set; }
         
         [Object]
         [PropertyName("dataset_consent")]
-        public DatasetConsent DatasetConsent { get; set; }
+        #nullable enable
+        public DatasetConsent? DatasetConsent { get; set; }
         
         [Nested]
         [PropertyName("object_instances")]
-        public ICollection<ObjectInstance> ObjectInstances { get; set; }
+        #nullable enable
+        public ICollection<ObjectInstance>? ObjectInstances { get; set; }
         
         [Nested]
         [PropertyName("object_titles")]
-        public ICollection<ObjectTitle> ObjectTitles { get; set; }
+        #nullable enable
+        public ICollection<ObjectTitle>? ObjectTitles { get; set; }
         
         [Nested]
         [PropertyName("object_dates")]
-        public ICollection<ObjectDate> ObjectDates { get; set; }
+        #nullable enable
+        public ICollection<ObjectDate>? ObjectDates { get; set; }
         
         [Nested]
         [PropertyName("object_contributors")]
-        public ICollection<ObjectContributor> ObjectContributors { get; set; }
+        #nullable enable
+        public ICollection<ObjectContributor>? ObjectContributors { get; set; }
         
         [Nested]
         [PropertyName("object_topics")]
-        public ICollection<ObjectTopic> ObjectTopics { get; set; }
+        #nullable enable
+        public ICollection<ObjectTopic>? ObjectTopics { get; set; }
         
         [Nested]
         [PropertyName("object_identifiers")]
-        public ICollection<ObjectIdentifier> ObjectIdentifiers { get; set; }
+        #nullable enable
+        public ICollection<ObjectIdentifier>? ObjectIdentifiers { get; set; }
         
         [Nested]
         [PropertyName("object_descriptions")]
-        public ICollection<ObjectDescription> ObjectDescriptions { get; set; }
+        #nullable enable
+        public ICollection<ObjectDescription>? ObjectDescriptions { get; set; }
         
         [Nested]
         [PropertyName("object_rights")]
-        public ICollection<ObjectRight> ObjectRights { get; set; }
+        #nullable enable
+        public ICollection<ObjectRight>? ObjectRights { get; set; }
         
         [Nested]
         [PropertyName("object_relationships")]
-        public ICollection<ObjectRelationship> ObjectRelationships { get; set; }
+        #nullable enable
+        public ICollection<ObjectRelationship>? ObjectRelationships { get; set; }
         
         [Number(Name = "linked_studies")]
-        public int[] LinkedStudies { get; set; }
+        #nullable enable
+        public int[]? LinkedStudies { get; set; }
         
         [Text(Name = "provenance_string")]
-        public string ProvenanceString { get; set; }
+        #nullable enable
+        public string? ProvenanceString { get; set; }
     }
 }

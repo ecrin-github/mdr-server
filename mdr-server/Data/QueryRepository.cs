@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using mdr_server.Contracts.v1.Requests.Query;
 using mdr_server.Contracts.v1.Responses;
-using mdr_server.Entities.Object;
+using mdr_server.Contracts.v1.Responses.StudyListResponse;
+using mdr_server.Entities.FetchedData;
 using mdr_server.Entities.Study;
-using mdr_server.Entities.Types;
 using mdr_server.Interfaces;
 using Nest;
+using Object = mdr_server.Entities.Object.Object;
 
 namespace mdr_server.Data
 {
@@ -33,27 +35,66 @@ namespace mdr_server.Data
             return startFrom;
         }
 
-        private string GetIdentifierType(int id)
+        private static bool HasProperty(object obj, string propertyName)
         {
-            var identifierTypes = new List<IdentifierType>();
-            
-            identifierTypes.Add(new IdentifierType(){Id = 11, Name = "Trial registry ID"});
-            identifierTypes.Add(new IdentifierType(){Id = 41, Name = "Regulatory body ID"});
-            identifierTypes.Add(new IdentifierType(){Id = 12, Name = "Ethics review ID"});
-            identifierTypes.Add(new IdentifierType(){Id = 13, Name = "Funder's ID"});
-            identifierTypes.Add(new IdentifierType(){Id = 14, Name = "Sponsor's ID"});
-            identifierTypes.Add(new IdentifierType(){Id = 39, Name = "NIH CTRP ID"});
-            identifierTypes.Add(new IdentifierType(){Id = 40, Name = "DAIDS ID"});
-            identifierTypes.Add(new IdentifierType(){Id = 42, Name = "NHLBI ID"});
-            
-            return identifierTypes.Find(x => x.Id == id)?.Name;
+            if (obj.GetType().GetProperty(propertyName) != null) return true;
+            return false;
         }
-        
+
         public async Task<BaseResponse> GetSpecificStudy(SpecificStudyRequest specificStudyRequest)
         {
             var startFrom = CalculateStartFrom(specificStudyRequest.Page, specificStudyRequest.Size);
 
-            var identifierType = GetIdentifierType(specificStudyRequest.SearchType);
+            var queryClause = new List<QueryContainer>();
+            
+            queryClause.Add(new NestedQuery()
+            {
+                Name = "",
+                Path = new Field("study_identifiers"),
+                Query = new TermQuery()
+                        {
+                            Field = Infer.Field<Study>(p => p.StudyIdentifiers.First()
+                                .IdentifierType.Id), Value = specificStudyRequest.SearchType
+                        } &&
+                        new TermQuery()
+                        {
+                            Field = Infer.Field<Study>(p => p.StudyIdentifiers.First()
+                                .IdentifierValue), Value = specificStudyRequest.SearchValue
+                        }
+            });
+
+            FiltersListRequest filtersListRequest = null;
+
+            List<QueryContainer> mustNot = null;
+            if (HasProperty(specificStudyRequest, "Filters"))
+            {
+                filtersListRequest = specificStudyRequest.Filters;
+                if (HasProperty(specificStudyRequest.Filters, "StudyFilters"))
+                {
+                    mustNot = new List<QueryContainer>();
+                    foreach (var param in specificStudyRequest.Filters!.StudyFilters)
+                    {
+                        mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                    }
+                }
+            }
+
+            BoolQuery boolQuery;
+            if (mustNot is { Count: > 0 })
+            {
+                boolQuery = new BoolQuery()
+                {
+                    Must = queryClause,
+                    MustNot = mustNot
+                };
+            }
+            else
+            {
+                boolQuery = new BoolQuery()
+                {
+                    Must = queryClause
+                };
+            }
             
             SearchRequest<Study> searchRequest;
             if (startFrom != null)
@@ -62,31 +103,24 @@ namespace mdr_server.Data
                 {
                     From = startFrom,
                     Size = specificStudyRequest.Size,
-                    Query = new NestedQuery()
-                    {
-                        Name = "",
-                        Path = new Field("study_identifiers"),
-                        Query = new TermQuery() {Field = Infer.Field<Study>(p => p.StudyIdentifiers.First().IdentifierType), Value = identifierType} &&
-                                new TermQuery() {Field = Infer.Field<Study>(p => p.StudyIdentifiers.First().IdentifierValue), Value = specificStudyRequest.SearchValue}
-                    }
+                    Query = boolQuery
                 };
             }
             else
             {
                 searchRequest = new SearchRequest<Study>(Indices.Index("study"))
                 {
-                    Query = new NestedQuery()
-                    {
-                        Name = "",
-                        Path = new Field("study_identifiers"),
-                        Query = new TermQuery() {Field = new Field("study_identifiers.identifier_type"), Value = identifierType} &&
-                                new TermQuery() {Field = new Field("study_identifiers.identifier_value"), Value = specificStudyRequest.SearchValue}
-                    }
+                    Query = boolQuery
                 };
             }
             
             var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);
-            var studies = await _dataMapper.MapStudies(results.Documents.ToList());
+            FetchedStudies fetchedStudies = new FetchedStudies()
+            {
+                Total = results.Total,
+                Studies = results.Documents.ToList()
+            };
+            var studies = await _dataMapper.MapStudies(fetchedStudies, filtersListRequest);
             return new BaseResponse()
             {
                 Total = results.Total,
@@ -99,6 +133,22 @@ namespace mdr_server.Data
         {
             var startFrom = CalculateStartFrom(studyCharacteristicsRequest.Page, studyCharacteristicsRequest.Size);
 
+            FiltersListRequest filtersListRequest = null;
+            
+            List<QueryContainer> mustNot = null;
+            if (HasProperty(studyCharacteristicsRequest, "Filters"))
+            {
+                filtersListRequest = studyCharacteristicsRequest.Filters;
+                if (HasProperty(studyCharacteristicsRequest.Filters, "StudyFilters"))
+                {
+                    mustNot = new List<QueryContainer>();
+                    foreach (var param in studyCharacteristicsRequest.Filters!.StudyFilters)
+                    {
+                        mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                    }
+                }
+            }
+            
             var shouldClause = new List<QueryContainer>();
             shouldClause.Add(new SimpleQueryStringQuery()
             {
@@ -136,15 +186,43 @@ namespace mdr_server.Data
                     }
                 });
             }
-            
-            var boolQuery = new BoolQuery();
+
+            BoolQuery boolQuery;
             if (studyCharacteristicsRequest.LogicalOperator == "and")
             {
-                boolQuery.Must = queryClauses;
+                if (mustNot is { Count: > 0 })
+                {
+                    boolQuery = new BoolQuery()
+                    {
+                        Must = queryClauses,
+                        MustNot = mustNot
+                    };
+                }
+                else
+                {
+                    boolQuery = new BoolQuery()
+                    {
+                        Must = queryClauses
+                    };
+                }
             }
             else
             {
-                boolQuery.Should = queryClauses;
+                if (mustNot is { Count: > 0 })
+                {
+                    boolQuery = new BoolQuery()
+                    {
+                        Should = queryClauses,
+                        MustNot = mustNot
+                    };
+                }
+                else
+                {
+                    boolQuery = new BoolQuery()
+                    {
+                        Should = queryClauses
+                    };
+                }
             }
 
             SearchRequest<Study> searchRequest;
@@ -167,7 +245,12 @@ namespace mdr_server.Data
             
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);
-                var studies = await _dataMapper.MapStudies(results.Documents.ToList());
+                FetchedStudies fetchedStudies = new FetchedStudies()
+                {
+                    Total = results.Total,
+                    Studies = results.Documents.ToList()
+                };
+                var studies = await _dataMapper.MapStudies(fetchedStudies, filtersListRequest);
                 return new BaseResponse()
                 {
                     Total = results.Total,
@@ -180,6 +263,22 @@ namespace mdr_server.Data
         {
             var startFrom = CalculateStartFrom(viaPublishedPaperRequest.Page, viaPublishedPaperRequest.Size);
 
+            FiltersListRequest filtersListRequest = null;
+            
+            List<QueryContainer> mustNot = null;
+            if (HasProperty(viaPublishedPaperRequest, "Filters"))
+            {
+                filtersListRequest = viaPublishedPaperRequest.Filters;
+                if (HasProperty(viaPublishedPaperRequest.Filters, "ObjectFilters"))
+                {
+                    mustNot = new List<QueryContainer>();
+                    foreach (var param in viaPublishedPaperRequest.Filters!.ObjectFilters)
+                    {
+                        mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                    }
+                }
+            }
+            
             var mustQuery = new List<QueryContainer>();
             
             if (viaPublishedPaperRequest.SearchType == "doi")
@@ -215,6 +314,23 @@ namespace mdr_server.Data
                 });
             }
             
+            BoolQuery boolQuery;
+            if (mustNot is { Count: > 0 })
+            {
+                boolQuery = new BoolQuery()
+                {
+                    Must = mustQuery,
+                    MustNot = mustNot
+                };
+            }
+            else
+            {
+                boolQuery = new BoolQuery()
+                {
+                    Must = mustQuery
+                };
+            }
+            
             SearchRequest<Object> searchRequest;
             if (startFrom != null)
             {
@@ -222,26 +338,25 @@ namespace mdr_server.Data
                 {
                     From = startFrom,
                     Size = viaPublishedPaperRequest.Size,
-                    Query = new BoolQuery()
-                    {
-                        Must = mustQuery
-                    }
+                    Query = boolQuery
                 };
             }
             else
             {
                 searchRequest = new SearchRequest<Object>(Indices.Index("data-object"))
                 {
-                    Query = new BoolQuery()
-                    {
-                        Must = mustQuery
-                    }
+                    Query = boolQuery
                 };
             }
             
             {
                 var results = await _elasticSearchService.GetConnection().SearchAsync<Object>(searchRequest);
-                var studies = await _dataMapper.MapObjects(results.Documents.ToList());
+                FetchedObjects fetchedObjects = new FetchedObjects()
+                {
+                    Total = results.Total,
+                    Objects = results.Documents.ToList()
+                };
+                var studies = await _dataMapper.MapObjects(fetchedObjects, filtersListRequest);
 
                 return new BaseResponse()
                 {
@@ -264,9 +379,7 @@ namespace mdr_server.Data
                     )
                 )
             );
-            var studies = results.Documents.ToList();
-
-            return await _dataMapper.MapStudies(studies);
+            return await _dataMapper.MapStudy(results.Documents.ToList());
         }
     }
 }

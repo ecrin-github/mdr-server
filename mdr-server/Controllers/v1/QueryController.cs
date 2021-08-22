@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using mdr_server.Contracts.v1;
 using mdr_server.Contracts.v1.Requests.Query;
 using mdr_server.Contracts.v1.Responses;
+using mdr_server.Contracts.v1.Responses.StudyListResponse;
 using mdr_server.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
