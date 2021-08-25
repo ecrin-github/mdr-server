@@ -45,6 +45,8 @@ namespace mdr_server.Data
         {
             var startFrom = CalculateStartFrom(specificStudyRequest.Page, specificStudyRequest.Size);
 
+            string identifierValue = specificStudyRequest.SearchValue.ToUpper();
+            
             var queryClause = new List<QueryContainer>();
             
             queryClause.Add(new NestedQuery()
@@ -59,7 +61,7 @@ namespace mdr_server.Data
                         new TermQuery()
                         {
                             Field = Infer.Field<Study>(p => p.StudyIdentifiers.First()
-                                .IdentifierValue), Value = specificStudyRequest.SearchValue
+                                .IdentifierValue), Value = identifierValue
                         }
             });
 
@@ -142,36 +144,34 @@ namespace mdr_server.Data
                 if (HasProperty(studyCharacteristicsRequest.Filters, "StudyFilters"))
                 {
                     mustNot = new List<QueryContainer>();
-                    foreach (var param in studyCharacteristicsRequest.Filters!.StudyFilters)
+                    foreach (var param in filtersListRequest.StudyFilters)
                     {
                         mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
                     }
                 }
             }
 
-            var shouldClause = new List<QueryContainer>();
-            shouldClause.Add(new SimpleQueryStringQuery()
+            var queryClauses = new List<QueryContainer>();
+
+            if (!string.IsNullOrEmpty(studyCharacteristicsRequest.TitleContains))
             {
-                Fields = Infer.Field<Study>(f => f.DisplayTitle),
-                Query = studyCharacteristicsRequest.TitleContains,
-                DefaultOperator = Operator.And
-            });
-            shouldClause.Add(new NestedQuery()
-            {
-                Path = Infer.Field<Study>(p => p.StudyTitles),
-                Query = new SimpleQueryStringQuery()
+                queryClauses.Add(new SimpleQueryStringQuery()
                 {
-                    Fields = Infer.Field<Study>(f => f.StudyTitles.First().TitleText),
+                    Fields = Infer.Field<Study>(f => f.DisplayTitle),
                     Query = studyCharacteristicsRequest.TitleContains,
                     DefaultOperator = Operator.And
-                }
-            });
-
-            var queryClauses = new List<QueryContainer>();
-            queryClauses.Add(new BoolQuery()
-            {
-                Should = shouldClause
-            });
+                });
+                queryClauses.Add(new NestedQuery()
+                {
+                    Path = Infer.Field<Study>(p => p.StudyTitles),
+                    Query = new SimpleQueryStringQuery()
+                    {
+                        Fields = Infer.Field<Study>(f => f.StudyTitles.First().TitleText),
+                        Query = studyCharacteristicsRequest.TitleContains,
+                        DefaultOperator = Operator.And
+                    }
+                });
+            }
 
             if (!string.IsNullOrEmpty(studyCharacteristicsRequest.TopicsInclude))
             {
@@ -180,15 +180,22 @@ namespace mdr_server.Data
                     Path = Infer.Field<Study>(p => p.StudyTopics),
                     Query = new SimpleQueryStringQuery()
                     {
-                        Fields = Infer.Field<Study>(f => f.StudyTopics.First().MeshValue),
+                        Fields = Infer.Field<Study>(f => f.StudyTopics.First().MeshValue).And("original_value"),
                         Query = studyCharacteristicsRequest.TopicsInclude,
                         DefaultOperator = Operator.And
                     }
                 });
             }
 
+            string logicalOperator = studyCharacteristicsRequest.LogicalOperator;
+
+            if (string.IsNullOrEmpty(logicalOperator))
+            {
+                logicalOperator = "and";
+            }
+
             BoolQuery boolQuery;
-            if (studyCharacteristicsRequest.LogicalOperator == "and")
+            if (logicalOperator == "and")
             {
                 if (mustNot is { Count: > 0 })
                 {
@@ -272,7 +279,7 @@ namespace mdr_server.Data
                 if (HasProperty(viaPublishedPaperRequest.Filters, "ObjectFilters"))
                 {
                     mustNot = new List<QueryContainer>();
-                    foreach (var param in viaPublishedPaperRequest.Filters!.ObjectFilters)
+                    foreach (var param in filtersListRequest.ObjectFilters)
                     {
                         mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
                     }

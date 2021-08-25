@@ -30,7 +30,7 @@ namespace mdr_server.Controllers.v1
             });
         }
         
-        /*[HttpPost(ApiRoutes.RawQuery.GetObjectSearchResults)]
+        [HttpPost(ApiRoutes.RawQuery.GetObjectSearchResults)]
         public async Task<ActionResult<SearchResponse>> GetObjectSearchResults(RawQueryRequest rawQueryRequest)
         {
             var response = await _rawQueryRepository.GetObjectSearchResults(rawQueryRequest);
@@ -41,6 +41,6 @@ namespace mdr_server.Controllers.v1
                 Size = rawQueryRequest.Size,
                 Data = response.Data
             });
-        }*/
+        }
     }
 }
