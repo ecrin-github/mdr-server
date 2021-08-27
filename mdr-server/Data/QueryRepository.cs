@@ -37,6 +37,7 @@ namespace mdr_server.Data
 
         private static bool HasProperty(object obj, string propertyName)
         {
+            if (obj == null) return false;
             if (obj.GetType().GetProperty(propertyName) != null) return true;
             return false;
         }
@@ -45,7 +46,8 @@ namespace mdr_server.Data
         {
             var startFrom = CalculateStartFrom(specificStudyRequest.Page, specificStudyRequest.Size);
 
-            string identifierValue = specificStudyRequest.SearchValue.ToUpper();
+            string identifierValue = specificStudyRequest.SearchValue.ToUpper().Trim();
+            
             
             var queryClause = new List<QueryContainer>();
             

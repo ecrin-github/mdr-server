@@ -22,6 +22,7 @@ namespace mdr_server.Data
         
         private static bool HasProperty(object obj, string propertyName)
         {
+            if (obj == null) return false;
             if (obj.GetType().GetProperty(propertyName) != null) return true;
             return false;
         }

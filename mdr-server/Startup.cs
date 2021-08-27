@@ -49,9 +49,8 @@ namespace mdr_server
             /*app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
-            */
-            
+            });*/
+
             app.UseMiddleware<ExceptionMiddleware>();
             if (env.IsProduction() || env.IsDevelopment())
             {
