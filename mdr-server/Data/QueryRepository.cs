@@ -47,7 +47,22 @@ namespace mdr_server.Data
             var startFrom = CalculateStartFrom(specificStudyRequest.Page, specificStudyRequest.Size);
 
             string identifierValue = specificStudyRequest.SearchValue.ToUpper().Trim();
-            
+
+            FiltersListRequest filtersListRequest = null;
+
+            List<QueryContainer> filters = null;
+            if (HasProperty(specificStudyRequest, "Filters") && specificStudyRequest.Filters != null)
+            {
+                filtersListRequest = specificStudyRequest.Filters;
+                if (HasProperty(specificStudyRequest.Filters, "StudyFilters"))
+                {
+                    filters = new List<QueryContainer>();
+                    foreach (var param in specificStudyRequest.Filters!.StudyFilters)
+                    {
+                        filters.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                    }
+                }
+            }
             
             var queryClause = new List<QueryContainer>();
             
@@ -66,39 +81,19 @@ namespace mdr_server.Data
                                 .IdentifierValue), Value = identifierValue
                         }
             });
-
-            FiltersListRequest filtersListRequest = null;
-
-            List<QueryContainer> mustNot = null;
-            if (HasProperty(specificStudyRequest, "Filters") && specificStudyRequest.Filters != null)
+            
+            if (filters is { Count: > 0 })
             {
-                filtersListRequest = specificStudyRequest.Filters;
-                if (HasProperty(specificStudyRequest.Filters, "StudyFilters"))
+                queryClause.Add(new BoolQuery()
                 {
-                    mustNot = new List<QueryContainer>();
-                    foreach (var param in specificStudyRequest.Filters!.StudyFilters)
-                    {
-                        mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
-                    }
-                }
+                    Should = filters
+                });
             }
 
-            BoolQuery boolQuery;
-            if (mustNot is { Count: > 0 })
+            var boolQuery = new BoolQuery()
             {
-                boolQuery = new BoolQuery()
-                {
-                    Must = queryClause,
-                    MustNot = mustNot
-                };
-            }
-            else
-            {
-                boolQuery = new BoolQuery()
-                {
-                    Must = queryClause
-                };
-            }
+                Must = queryClause
+            };
             
             SearchRequest<Study> searchRequest;
             if (startFrom != null)
@@ -139,16 +134,16 @@ namespace mdr_server.Data
             
             FiltersListRequest filtersListRequest = null;
             
-            List<QueryContainer> mustNot = null;
+            List<QueryContainer> filters = null;
             if (HasProperty(studyCharacteristicsRequest, "Filters") && studyCharacteristicsRequest.Filters != null)
             {
                 filtersListRequest = studyCharacteristicsRequest.Filters;
                 if (HasProperty(studyCharacteristicsRequest.Filters, "StudyFilters"))
                 {
-                    mustNot = new List<QueryContainer>();
+                    filters = new List<QueryContainer>();
                     foreach (var param in filtersListRequest.StudyFilters)
                     {
-                        mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                        filters.Add(new RawQuery(JsonSerializer.Serialize(param)));
                     }
                 }
             }
@@ -189,6 +184,14 @@ namespace mdr_server.Data
                 });
             }
 
+            if (filters is { Count: > 0 })
+            {
+                queryClauses.Add(new BoolQuery()
+                {
+                    Should = filters
+                });
+            }
+
             string logicalOperator = studyCharacteristicsRequest.LogicalOperator;
 
             if (string.IsNullOrEmpty(logicalOperator))
@@ -199,39 +202,17 @@ namespace mdr_server.Data
             BoolQuery boolQuery;
             if (logicalOperator == "and")
             {
-                if (mustNot is { Count: > 0 })
+                boolQuery = new BoolQuery()
                 {
-                    boolQuery = new BoolQuery()
-                    {
-                        Must = queryClauses,
-                        MustNot = mustNot
-                    };
-                }
-                else
-                {
-                    boolQuery = new BoolQuery()
-                    {
-                        Must = queryClauses
-                    };
-                }
+                    Must = queryClauses
+                };
             }
             else
             {
-                if (mustNot is { Count: > 0 })
+                boolQuery = new BoolQuery()
                 {
-                    boolQuery = new BoolQuery()
-                    {
-                        Should = queryClauses,
-                        MustNot = mustNot
-                    };
-                }
-                else
-                {
-                    boolQuery = new BoolQuery()
-                    {
-                        Should = queryClauses
-                    };
-                }
+                    Should = queryClauses
+                };
             }
 
             SearchRequest<Study> searchRequest;
@@ -274,16 +255,16 @@ namespace mdr_server.Data
 
             FiltersListRequest filtersListRequest = null;
             
-            List<QueryContainer> mustNot = null;
+            List<QueryContainer> filters = null;
             if (HasProperty(viaPublishedPaperRequest, "Filters") && viaPublishedPaperRequest.Filters != null)
             {
                 filtersListRequest = viaPublishedPaperRequest.Filters;
                 if (HasProperty(viaPublishedPaperRequest.Filters, "ObjectFilters"))
                 {
-                    mustNot = new List<QueryContainer>();
+                    filters = new List<QueryContainer>();
                     foreach (var param in filtersListRequest.ObjectFilters)
                     {
-                        mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                        filters.Add(new RawQuery(JsonSerializer.Serialize(param)));
                     }
                 }
             }
@@ -323,22 +304,18 @@ namespace mdr_server.Data
                 });
             }
             
-            BoolQuery boolQuery;
-            if (mustNot is { Count: > 0 })
+            if (filters is { Count: > 0 })
             {
-                boolQuery = new BoolQuery()
+                mustQuery.Add(new BoolQuery()
                 {
-                    Must = mustQuery,
-                    MustNot = mustNot
-                };
+                    Should = filters
+                });
             }
-            else
+
+            var boolQuery = new BoolQuery()
             {
-                boolQuery = new BoolQuery()
-                {
-                    Must = mustQuery
-                };
-            }
+                Must = mustQuery
+            };
             
             SearchRequest<Object> searchRequest;
             if (startFrom != null)

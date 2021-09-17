@@ -30,15 +30,15 @@ namespace mdr_server.Data
         public async Task<FetchedObjects> GetFetchedObjects(int[] ids, FiltersListRequest filtersListRequest)
         {
 
-            List<QueryContainer> mustNot = null;
+            List<QueryContainer> filters = null;
             if (filtersListRequest != null)
             {
                 if (HasProperty(filtersListRequest, "ObjectFilters"))
                 {
-                    mustNot = new List<QueryContainer>();
+                    filters = new List<QueryContainer>();
                     foreach (var param in filtersListRequest.ObjectFilters)
                     {
-                        mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                        filters.Add(new RawQuery(JsonSerializer.Serialize(param)));
                     }
                 }
             }
@@ -51,27 +51,21 @@ namespace mdr_server.Data
                 Field = Infer.Field<Object>(p => p.Id),
                 Terms = objectArray
             });
-            
-            BoolQuery boolQuery;
-            if (mustNot == null)
-            {
-                boolQuery = new BoolQuery()
-                {
-                    Filter = queryClause
-                };
-            }
-            else
-            {
-                boolQuery = new BoolQuery()
-                {
-                    Filter = queryClause,
-                    MustNot = mustNot
-                };
-            }
 
+            if (filters is { Count: > 0 })
+            {
+                queryClause.Add(new BoolQuery()
+                {
+                    Should = filters
+                });
+            }
+            
             SearchRequest<Object> searchRequest = new SearchRequest<Object>(Indices.Index("data-object"))
             {
-                Query = boolQuery
+                Query = new BoolQuery()
+                {
+                    Filter = queryClause
+                }
             };
 
             var result = await _elasticSearchService.GetConnection().SearchAsync<Object>(searchRequest);
@@ -85,15 +79,15 @@ namespace mdr_server.Data
         
         public async Task<FetchedStudies> GetFetchedStudies(int[] ids, FiltersListRequest filtersListRequest)
         {
-            List<QueryContainer> mustNot = null;
+            List<QueryContainer> filters = null;
             if (filtersListRequest != null)
             {
                 if (HasProperty(filtersListRequest, "StudyFilters"))
                 {
-                    mustNot = new List<QueryContainer>();
+                    filters = new List<QueryContainer>();
                     foreach (var param in filtersListRequest.StudyFilters)
                     {
-                        mustNot.Add(new RawQuery(JsonSerializer.Serialize(param)));
+                        filters.Add(new RawQuery(JsonSerializer.Serialize(param)));
                     }
                 }
             }
@@ -107,26 +101,20 @@ namespace mdr_server.Data
                 Terms = objectArray
             });
             
-            BoolQuery boolQuery;
-            if (mustNot == null)
+            if (filters is { Count: > 0 })
             {
-                boolQuery = new BoolQuery()
+                queryClause.Add(new BoolQuery()
                 {
-                    Filter = queryClause
-                };
-            }
-            else
-            {
-                boolQuery = new BoolQuery()
-                {
-                    Filter = queryClause,
-                    MustNot = mustNot
-                };
+                    Should = filters
+                });
             }
 
             SearchRequest<Study> searchRequest = new SearchRequest<Study>(Indices.Index("study"))
             {
-                Query = boolQuery,
+                Query = new BoolQuery()
+                {
+                    Filter = queryClause
+                },
             };
             
             var result = await _elasticSearchService.GetConnection().SearchAsync<Study>(searchRequest);

@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using mdr_server.Extensions;
 using mdr_server.Middleware;
